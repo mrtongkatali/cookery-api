@@ -1,14 +1,29 @@
-from flask import Flask
-from flask_restful import Resource, Api
+from flask import Flask, request
+from flask_restful import Resource, Api, reqparse
 
 app = Flask(__name__)
 api = Api(app)
 
 class HelloWorld(Resource):
     def get(self):
-        return {'hello': 'world'}
+        return {'hello': 'world'}, 201
 
-api.add_resource(HelloWorld, '/')
+class TodoSimple(Resource):
+    def get(self, todo_id):
+        return {'hello': todo_id}, 201
+
+    def post(self):
+        return {'payload': request.get_json(force=True)}
+
+api.add_resource(TodoSimple,
+    '/todo/<string:todo_id>',
+    '/todo'
+)
+
+api.add_resource(HelloWorld,
+    '/',
+    '/hello'
+)
 
 if __name__ == "__main__":
     app.run(debug=True)

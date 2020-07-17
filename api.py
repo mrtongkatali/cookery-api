@@ -1,20 +1,27 @@
+from constant import SECRET_KEY, BAD_REQUEST, INTERNAL_ERROR
+
 from flask import Flask, request
+from flask_bcrypt import Bcrypt
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
 
 from manage import User, UserProfile
+from validation import UserValidationSchema, ErrorSerializer
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://cookeryuser:P@ssw0rd!@localhost:3306/cookerydb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 api = Api(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+bcrypt = Bcrypt(app)
 
+# Schema
 class UserProfileSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = UserProfile
@@ -27,29 +34,44 @@ class UserSchema(ma.SQLAlchemySchema):
     username = ma.auto_field()
     firstname = ma.auto_field()
     lastname = ma.auto_field()
+
     user_profile = ma.Nested(UserProfileSchema)
 
-class HelloWorld(Resource):
+# Resource
+class UserResource(Resource):
     def get(self):
         one_user = User.query.all()
         return {'users': UserSchema(many=True).dump(one_user)}, 201
 
-class TodoSimple(Resource):
-    def get(self, todo_id):
-        return {'hello': todo_id}, 201
-
     def post(self):
-        return {'payload': request.get_json(force=True)}
+        req = request.get_json(force=True)
+        errors = UserValidationSchema().validate(req)
 
-api.add_resource(TodoSimple,
-    '/todo/<string:todo_id>',
-    '/todo'
+        if errors:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+        else:
+            user = User.query.filter_by(username=req['username']).first()
+            if user:
+                return ErrorSerializer().dump(dict(message=INTERNAL_ERROR, errors=['username already exists'])), 500
+
+            return "ok"
+
+api.add_resource(UserResource,
+    '/user',
 )
 
-api.add_resource(HelloWorld,
-    '/',
-    '/hello'
-)
+# Sample
+# class TodoSimple(Resource):
+#     def get(self, todo_id):
+#         return {'hello': todo_id}, 201
+#
+#     def post(self):
+#         return {'payload': request.get_json(force=True)}
+#
+# api.add_resource(TodoSimple,
+#     '/todo/<string:todo_id>',
+#     '/todo'
+# )
 
 if __name__ == "__main__":
     app.run(debug=True)

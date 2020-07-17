@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
@@ -11,6 +12,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+bcrypt = Bcrypt(app)
 
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
@@ -29,6 +31,16 @@ class User(TimestampMixin, db.Model):
     status = db.Column(db.Integer)
 
     user_profile = db.relationship("UserProfile", backref="user", uselist=False)
+
+    def hash_password(self):
+        self.password = generate_password_hash(self.password).decode('utf8')
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return '<User %r>' % self.username

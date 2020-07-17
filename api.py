@@ -1,14 +1,13 @@
 from constant import SECRET_KEY, BAD_REQUEST, INTERNAL_ERROR
 
 from flask import Flask, request
-from flask_bcrypt import Bcrypt
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
 
-from manage import User, UserProfile
-from validation import UserValidationSchema, ErrorSerializer
+from models import User, UserProfile
+from serializer import *
 
 app = Flask(__name__)
 
@@ -19,7 +18,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 api = Api(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
-bcrypt = Bcrypt(app)
 
 # Schema
 class UserProfileSchema(ma.SQLAlchemyAutoSchema):
@@ -52,9 +50,15 @@ class UserResource(Resource):
         else:
             user = User.query.filter_by(username=req['username']).first()
             if user:
-                return ErrorSerializer().dump(dict(message=INTERNAL_ERROR, errors=['username already exists'])), 500
+                return ErrorSerializer().dump(dict(message=INTERNAL_ERROR, errors=['username already exists.'])), 500
 
-            return "ok"
+            user = User(**req)
+            user.hash_password()
+            user.save()
+
+            return SuccessSerializer().dump(
+                dict(message="Successful.", data=UserSchema().dump(user))
+            ), 200
 
 api.add_resource(UserResource,
     '/user',

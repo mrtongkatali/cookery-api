@@ -16,3 +16,7 @@ class UserValidationSchema(Schema):
 class ErrorSerializer(Schema):
     message = fields.String()
     errors = fields.Dict()
+
+class SuccessSerializer(Schema):
+    message = fields.String()
+    data = fields.Dict()

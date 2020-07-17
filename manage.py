@@ -15,26 +15,30 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
-class User(db.Model):
+class TimestampMixin(object):
+    created_at = db.Column(
+        db.DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
+class User(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    password = db.Column(db.String(60))
+    status = db.Column(db.Integer)
+
+    user_profile = db.relationship("UserProfile", backref="user", uselist=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
 
-class UserProfile(db.Model):
+class UserProfile(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    short_bio = db.Column(db.String(20), unique=True, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow())
+    photoFsRef = db.Column(db.String(50))
+    short_bio = db.Column(db.String(20), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    user = db.relationship('User',
-        backref=db.backref('user_profile', lazy=True))
 
     def __repr__(self):
         return '<User %r>' % self.user

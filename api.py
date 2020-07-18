@@ -35,11 +35,7 @@ class UserSchema(ma.SQLAlchemySchema):
     user_profile = ma.Nested(UserProfileSchema)
 
 # Resource
-class UserResource(Resource):
-    def get(self):
-        one_user = User.query.all()
-        return {'users': UserSchema(many=True).dump(one_user)}, 201
-
+class UserSignUpResource(Resource):
     def post(self):
         req = request.get_json(force=True)
         errors = UserValidationSchema().validate(req)
@@ -84,7 +80,7 @@ class UserAuthResource(Resource):
         else:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
 
-api.add_resource(UserResource, '/user/sign-up', )
+api.add_resource(UserSignUpResource, '/user/sign-up', )
 api.add_resource(UserAuthResource, '/user/auth', )
 
 # Sample

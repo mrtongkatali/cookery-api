@@ -7,8 +7,8 @@ from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
-from flask_jwt_extended import JWTManager, create_access_token
-from datetime import datetime
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config.from_object('settings.DevelopmentConfig')
@@ -60,6 +60,14 @@ class UserResource(Resource):
             ), 200
 
 class UserAuthResource(Resource):
+    @jwt_required
+    def get(self):
+        if get_jwt_identity():
+            user = User.query.get(get_jwt_identity())
+            return dict(data=UserSchema().dump(user)), 200
+        else:
+            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+
     def post(self):
         req = request.get_json(force=True)
         user = User.query.filter_by(username=req.get('username')).first()
@@ -69,13 +77,14 @@ class UserAuthResource(Resource):
             if not authorized:
                 return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
             else:
-                return SuccessSerializer().dump(
-                    dict(message="Authenticated.", data=UserSchema().dump(user))
-                ), 200
+                expires = timedelta(days=7)
+                access_token = create_access_token(identity=str(user.id), expires_delta=expires)
+
+                return dict(message="Authenticated", token=access_token), 200
         else:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
 
-api.add_resource(UserResource, '/user', )
+api.add_resource(UserResource, '/user/sign-up', )
 api.add_resource(UserAuthResource, '/user/auth', )
 
 # Sample

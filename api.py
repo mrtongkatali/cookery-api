@@ -1,22 +1,23 @@
+# import os
 from constant import *
 from serializer import *
 from models import *
+from settings import *
 
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_jwt_extended import JWTManager, create_access_token
 from datetime import datetime
 
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = SECRET_KEY
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://cookeryuser:P@ssw0rd!@localhost:3306/cookerydb'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config.from_object('settings.DevelopmentConfig')
 
 api = Api(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+jwt = JWTManager(app)
 
 # Schema
 class UserProfileSchema(ma.SQLAlchemyAutoSchema):
@@ -59,9 +60,24 @@ class UserResource(Resource):
                 dict(message="Successful.", data=UserSchema().dump(user))
             ), 200
 
-api.add_resource(UserResource,
-    '/user',
-)
+class UserAuthResource(Resource):
+    def post(self):
+        req = request.get_json(force=True)
+        user = User.query.filter_by(username=req.get('username')).first()
+
+        if user is not None:
+            authorized = user.check_password(req.get('password'))
+            if not authorized:
+                return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+            else:
+                return SuccessSerializer().dump(
+                    dict(message="Authenticated.", data=UserSchema().dump(user))
+                ), 200
+        else:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+
+api.add_resource(UserResource, '/user', )
+api.add_resource(UserAuthResource, '/user/auth', )
 
 # Sample
 # class TodoSimple(Resource):

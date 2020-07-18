@@ -1,4 +1,3 @@
-# import os
 from constant import *
 from serializer import *
 from models import *

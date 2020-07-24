@@ -28,7 +28,7 @@ class User(TimestampMixin, db.Model):
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(60))
-    status = db.Column(db.Integer)
+    status = db.Column(db.Integer, default="1")
 
     user_profile = db.relationship("UserProfile", backref="user", uselist=False)
 
@@ -54,6 +54,27 @@ class UserProfile(TimestampMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.user
+
+class Dish(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dish_name = db.Column(db.String(100))
+    category = db.Column(db.Integer)
+    course = db.Column(db.Integer)
+    cuisine = db.Column(db.Integer)
+    prep_hour = db.Column(db.Integer)
+    prep_minute = db.Column(db.Integer)
+    cook_hour = db.Column(db.Integer)
+    cook_minute = db.Column(db.Integer)
+    status = db.Column(db.Integer, default="1")
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    instruction = db.relationship("PrepInstruction", backref="dish", uselist=True)
+
+class PrepInstruction(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    description = db.Column(db.String(1000))
+
 
 if __name__ == '__main__':
     manager.run()

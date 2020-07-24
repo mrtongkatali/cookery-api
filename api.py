@@ -9,6 +9,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
 from datetime import datetime, timedelta
+from elasticsearch import Elasticsearch
+
+import csv, json
 
 app = Flask(__name__)
 app.config.from_object('settings.DevelopmentConfig')
@@ -17,6 +20,7 @@ api = Api(app)
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 jwt = JWTManager(app)
+es = Elasticsearch()
 
 # Schema
 class UserProfileSchema(ma.SQLAlchemyAutoSchema):
@@ -80,8 +84,30 @@ class UserAuthResource(Resource):
         else:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
 
-api.add_resource(UserSignUpResource, '/user/sign-up', )
-api.add_resource(UserAuthResource, '/user/auth', )
+class CsvImporterResource(Resource):
+    def get(self):
+        data = []
+        with open('data/beef_recipe.csv') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for rows in csv_reader:
+                data.append(rows)
+
+        """
+        { "index" : {} }
+        {  "name":"Thor Ragnarok",  "genre":"Action", "summary":"Thor is imprisoned on the planet Sakaar, and must race  against time to return to Asgard and stop Ragnarök, the destruction of his world, at the hands of the powerful and ruthless villain Hela", "yearofrelease":2017, "metascore":74, "votes":374270, "rating":7.9 }
+        { "index" : {} }
+        {  "name":"Infinity War",  "genre":"Sci-Fi",   "summary":"The Avengers and their allies must be willing to sacrifice all in an attempt to defeat the powerful Thanos before his blitz of devastation and ruin puts an end to the universe", "yearofrelease":2018, "metascore":68, "votes":450856, "rating":8.6 }
+        { "index" : {} }
+        {  "name":"Christopher Robin",  "genre":"Comedy", "summary":"A working-class family man, Christopher Robin, encounters his childhood friend Winnie-the-Pooh, who helps him to  rediscover the joys of life", "yearofrelease":2018, "metascore":60, "votes":9648, "rating":7.9}
+
+        results = es.search(index='cookery-dishes')
+        print(results)
+        """
+        return data
+
+api.add_resource(UserSignUpResource, '/user/sign-up',)
+api.add_resource(UserAuthResource, '/user/auth',)
+api.add_resource(CsvImporterResource, '/csv-importer',)
 
 # Sample
 # class TodoSimple(Resource):

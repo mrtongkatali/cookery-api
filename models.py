@@ -48,7 +48,7 @@ class User(TimestampMixin, db.Model):
 class UserProfile(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     photoFsRef = db.Column(db.String(50))
-    short_bio = db.Column(db.String(20), nullable=False)
+    short_bio = db.Column(db.Text(), nullable=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
@@ -57,26 +57,39 @@ class UserProfile(TimestampMixin, db.Model):
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    dish_name = db.Column(db.String(100))
-    category = db.Column(db.Integer)
+    dish_name = db.Column(db.String())
+    main_dish = db.Column(db.Integer)
     course = db.Column(db.Integer)
     cuisine = db.Column(db.Integer)
-    prep_hour = db.Column(db.Integer)
-    prep_minute = db.Column(db.Integer)
-    cook_hour = db.Column(db.Integer)
-    cook_minute = db.Column(db.Integer)
+    prep_hour = db.Column(db.Integer, default="0")
+    prep_minute = db.Column(db.Integer, default="0")
+    cook_hour = db.Column(db.Integer, default="0")
+    cook_minute = db.Column(db.Integer, default="0")
+    serving_count = db.Column(db.Integer, default="1")
     status = db.Column(db.Integer, default="1")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     instruction = db.relationship("PrepInstruction", backref="dish", uselist=True)
 
     def __repr__(self):
-        return '<Dish %r>' % self.dish_name
+        return '<Dish %r>' % self.id
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 class PrepInstruction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
-    description = db.Column(db.String(1000))
+    description = db.Column(db.Text())
+    step_order = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Instruction %r>' % self.id
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 class NutritionFacts(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

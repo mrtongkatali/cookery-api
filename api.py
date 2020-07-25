@@ -39,6 +39,14 @@ class UserSchema(ma.SQLAlchemySchema):
 
     user_profile = ma.Nested(UserProfileSchema)
 
+class DishSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = PrepInstruction
+
+class PrepInstructionSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Dish
+
 # Resource
 class UserSignUpResource(Resource):
     def post(self):
@@ -86,15 +94,45 @@ class UserAuthResource(Resource):
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
 
 class CsvImporterResource(Resource):
+    @jwt_required
     def get(self):
-        data = []
-        with open('data/beef_recipe.csv') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for rows in csv_reader:
-                data.append(rows)
+        if get_jwt_identity():
+            user = User.query.get(get_jwt_identity())
+            data = []
 
-        # response = helpers.bulk(elastic, bulk_json_data(data, "employees", "people"))
-        return data
+            with open('data/beef_recipe.csv') as csv_file:
+                csv_reader = csv.DictReader(csv_file)
+                for r in csv_reader:
+                    d = Dish()
+                    d.user_id = user.id
+                    d.dish_name = r['name']
+                    d.main_dish = 1
+                    d.course = 1
+                    d.cuisine = 1
+                    d.prep_hour = r['prep_time_hour'] if r['prep_time_hour'] else 0
+                    d.prep_minute = r['prep_time_min'] if r['prep_time_min'] else 0
+                    d.cook_hour = r['cook_time_hour'] if r['cook_time_hour'] else 0
+                    d.cook_minute = r['prep_time_min'] if r['prep_time_min'] else 0
+                    d.serving_count = r['serving_count'] if r['serving_count'] else 0
+                    d.save()
+
+                    instructions = r['instructions'].strip('[').strip(']').split('.,')
+                    step_order = 1
+                    for desc in instructions:
+                        s = PrepInstruction()
+                        s.dish_id = d.id
+                        s.description = desc
+                        s.step_order = step_order
+                        s.save()
+                        step_order += 1
+
+                    data.append(r)
+
+            # response = helpers.bulk(elastic, bulk_json_data(data, "employees", "people"))
+
+            return data
+        else:
+            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
 api.add_resource(UserSignUpResource, '/user/sign-up',)
 api.add_resource(UserAuthResource, '/user/auth',)

@@ -57,7 +57,7 @@ class UserProfile(TimestampMixin, db.Model):
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    dish_name = db.Column(db.String())
+    dish_name = db.Column(db.String(100))
     main_dish = db.Column(db.Integer)
     course = db.Column(db.Integer)
     cuisine = db.Column(db.Integer)

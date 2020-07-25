@@ -70,11 +70,19 @@ class Dish(TimestampMixin, db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     instruction = db.relationship("PrepInstruction", backref="dish", uselist=True)
 
+    def __repr__(self):
+        return '<Dish %r>' % self.dish_name
+
 class PrepInstruction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
     description = db.Column(db.String(1000))
 
+class NutritionFacts(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    nutrition_label = db.Column(db.String(50))
+    nutrition_value = db.Column(db.Float)
 
 if __name__ == '__main__':
     manager.run()

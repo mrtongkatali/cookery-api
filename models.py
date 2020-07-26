@@ -81,6 +81,7 @@ class Dish(TimestampMixin, db.Model):
 class PrepInstruction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    main_dish = db.Column(db.Integer)
     description = db.Column(db.Text())
     step_order = db.Column(db.Integer)
 

@@ -104,7 +104,7 @@ class CsvImporterResource(Resource):
                 csv_reader = csv.DictReader(csv_file)
                 d = Dish()
                 d.user_id = user.id
-                d.dish_name = "sdf foo😊😃bar"
+                d.dish_name = "sdf すべての良い男の子は5をします └(^o^)┐"
                 d.main_dish = 13
                 d.course = 1
                 d.cuisine = 1

@@ -19,6 +19,7 @@ flask-bcrypt = "*"
 flask-jwt-extended = "*"
 python-dotenv = "*"
 elasticsearch = "*"
+simplejson = "*"
 
 [requires]
 python_version = "3.6"

@@ -98,5 +98,19 @@ class NutritionFacts(TimestampMixin, db.Model):
     nutrition_label = db.Column(db.String(50))
     nutrition_value = db.Column(db.Float)
 
+class Ingredients(TimestampMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
+    amount = db.Column(db.String(20))
+    unit = db.Column(db.String(20))
+    ingredient_id = db.Column(db.Integer)
+    ingredient_name = db.Column(db.String(200)) # for will be converted to just id after migration
+    main_dish = db.Column(db.Integer) # for tracking, can be deleted after migration
+    step_order = db.Column(db.Integer)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
 if __name__ == '__main__':
     manager.run()

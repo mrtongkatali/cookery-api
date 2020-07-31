@@ -185,9 +185,15 @@ class CsvImporterResource(Resource):
         else:
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
+class EsReindexResource(Resource):
+    def get(self):
+        return "hello world"
+        pass
+
 api.add_resource(UserSignUpResource, '/user/sign-up',)
 api.add_resource(UserAuthResource, '/user/auth',)
 api.add_resource(CsvImporterResource, '/csv-importer',)
+api.add_resource(EsReindexResource, '/reindex',)
 
 # Sample
 # class TodoSimple(Resource):

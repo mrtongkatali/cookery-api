@@ -70,6 +70,7 @@ class Dish(TimestampMixin, db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     instruction = db.relationship("PrepInstruction", backref="dish", uselist=True)
+    ingredients = db.relationship("Ingredients", backref="dish", uselist=True)
 
     def __repr__(self):
         return '<Dish %r>' % self.id

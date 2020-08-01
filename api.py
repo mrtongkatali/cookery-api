@@ -4,7 +4,7 @@ from models import *
 from settings import *
 from helpers import *
 
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
@@ -39,9 +39,27 @@ class UserSchema(ma.SQLAlchemySchema):
 
     user_profile = ma.Nested(UserProfileSchema)
 
-class DishSchema(ma.SQLAlchemyAutoSchema):
+class DishSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Dish
+
+    id = ma.auto_field()
+    dish_name = ma.auto_field()
+    main_dish = ma.auto_field()
+    course = ma.auto_field()
+    cuisine = ma.auto_field()
+    prep_hour = ma.auto_field()
+    prep_minute = ma.auto_field()
+    cook_hour = ma.auto_field()
+    cook_minute = ma.auto_field()
+    serving_count = ma.auto_field()
+    status = ma.auto_field()
+
+    ingredients = ma.Nested('IngredientSchema')
+
+class IngredientSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Ingredients
 
 class PrepInstructionSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
@@ -187,13 +205,37 @@ class CsvImporterResource(Resource):
 
 class EsReindexResource(Resource):
     def get(self):
-        return "hello world"
-        pass
+        req = request.args
+        errors = PaginationQSValidator().validate(req)
 
-api.add_resource(UserSignUpResource, '/user/sign-up',)
-api.add_resource(UserAuthResource, '/user/auth',)
-api.add_resource(CsvImporterResource, '/csv-importer',)
-api.add_resource(EsReindexResource, '/reindex',)
+        if errors:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+        else:
+
+            dish = Dish.query \
+                .join(Ingredients) \
+                .paginate(1,10,error_out=False)
+
+            # dish = Dish.query \
+            # .with_entities(Dish.id, Dish.dish_name, Dish.ingredients) \
+            #     .join(User) \
+            #     .order_by(Dish.id.desc()) \
+            #     .offset(1).limit(10) \
+            #     .all()
+
+            list = {
+                "list": DishSchema(many=True).dump(dish.items),
+                "total": 1
+            }
+
+            return SuccessSerializer().dump(
+                dict(message="Successful.", data=list)
+            ), 200
+
+api.add_resource(UserSignUpResource, '/v1/user/sign-up',)
+api.add_resource(UserAuthResource, '/v1/user/auth',)
+api.add_resource(CsvImporterResource, '/v1/csv-importer',)
+api.add_resource(EsReindexResource, '/v1/reindex',)
 
 # Sample
 # class TodoSimple(Resource):

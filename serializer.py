@@ -13,6 +13,11 @@ class UserValidationSchema(Schema):
         if (bool(re.match('((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,30})', data)) !=True):
             raise ValidationError("Password is not strong enough!")
 
+class PaginationQSValidator(Schema):
+    page = fields.Integer(required=True)
+    size = fields.Integer(required=True)
+    fields = fields.Integer(required=False)
+
 class ErrorSerializer(Schema):
     message = fields.String()
     errors = fields.Dict()

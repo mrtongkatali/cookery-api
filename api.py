@@ -204,7 +204,7 @@ class CsvImporterResource(Resource):
         else:
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
-class DishResource(Resource):
+class DishesResource(Resource):
     def get(self):
         req = request.args
         errors = PaginationQSValidator().validate(req)
@@ -213,7 +213,6 @@ class DishResource(Resource):
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
         else:
             dish = Dish.query \
-                .filter_by(main_dish=1) \
                 .order_by(Dish.id.desc()) \
                 .paginate(int(req["page"]),int(req["size"]),error_out=False)
 
@@ -229,7 +228,8 @@ class DishResource(Resource):
 api.add_resource(UserSignUpResource, '/v1/user/sign-up',)
 api.add_resource(UserAuthResource, '/v1/user/auth',)
 api.add_resource(CsvImporterResource, '/v1/csv-importer',)
-api.add_resource(DishResource, '/v1/dishes',)
+
+api.add_resource(DishesResource, '/v1/dishes',)
 
 # Sample
 # class TodoSimple(Resource):

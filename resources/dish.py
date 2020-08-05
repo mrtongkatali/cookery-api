@@ -1,39 +1,10 @@
-from ma import ma
-
 from flask import request
 from flask_restful import Resource
 
-from models.dish import *
+from models.dish import Dish
 from common.constant import *
 from common.serializer import *
-
-# Schema
-class DishSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = Dish
-
-    id = ma.auto_field()
-    dish_name = ma.auto_field()
-    main_dish = ma.auto_field()
-    course = ma.auto_field()
-    cuisine = ma.auto_field()
-    prep_hour = ma.auto_field()
-    prep_minute = ma.auto_field()
-    cook_hour = ma.auto_field()
-    cook_minute = ma.auto_field()
-    serving_count = ma.auto_field()
-    status = ma.auto_field()
-
-    ingredients = ma.Nested("IngredientSchema", many=True)
-    instruction = ma.Nested("PrepInstructionSchema", many=True)
-
-class IngredientSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = Ingredients
-
-class PrepInstructionSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = PrepInstruction
+from common.schema import DishSchema
 
 class DishesResource(Resource):
     def get(self):

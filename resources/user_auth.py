@@ -1,4 +1,3 @@
-from ma import ma
 from datetime import timedelta
 
 from flask import request
@@ -6,25 +5,9 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 from flask_restful import Resource
 
 from models.user import User, UserProfile
-
 from common.constant import *
 from common.serializer import *
-
-# Schema
-class UserSchema(ma.SQLAlchemySchema):
-    class Meta:
-        model = User
-
-    id = ma.auto_field()
-    username = ma.auto_field()
-    firstname = ma.auto_field()
-    lastname = ma.auto_field()
-
-    user_profile = ma.Nested("UserProfileSchema")
-
-class UserProfileSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = UserProfile
+from common.schema import UserSchema
 
 class UserSignUpResource(Resource):
     def post(self):

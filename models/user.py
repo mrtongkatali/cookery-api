@@ -1,9 +1,6 @@
 from db import db
-from app import app
-from mixins import TimestampMixin
-from flask_bcrypt import Bcrypt, generate_password_hash, check_password_hash
-
-bcrypt = Bcrypt(app)
+from models.mixins import TimestampMixin
+from flask_bcrypt import generate_password_hash, check_password_hash
 
 class User(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

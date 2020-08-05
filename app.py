@@ -1,18 +1,22 @@
-from flask import Flask, request, jsonify
-from flask_restful import Resource, Api, reqparse
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, create_access_token
+from flask import Flask
+from flask_restful import Api
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 
 from settings import *
+from resources.user_auth import *
 
 app = Flask(__name__)
 app.config.from_object('settings.DevelopmentConfig')
 
 api = Api(app)
-db = SQLAlchemy(app)
-ma = Marshmallow(app)
+bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+api.add_resource(UserSignUpResource, '/v1/user/sign-up',)
+api.add_resource(UserAuthResource, '/v1/user/auth',)
+
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    from db import db
+    db.init_app(app)
+    app.run(port=5000, debug=True)

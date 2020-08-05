@@ -27,7 +27,9 @@ class User(TimestampMixin, db.Model):
 
 class UserProfile(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photoFsRef = db.Column(db.String(50))
+    photoFsRef = db.Column(db.Text())
+    coverPhotoFsRef = db.Column(db.Text())
+    tagline = db.Column(db.Text())
     short_bio = db.Column(db.Text(), nullable=False)
     country = db.Column(db.String(30))
 

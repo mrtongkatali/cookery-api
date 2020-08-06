@@ -17,6 +17,7 @@ class Dishes(Resource):
             dish = Dish.get_all_dishes(**req)
             list = {
                 "list": DishSchema(many=True).dump(dish.items),
+                "count": len(dish.items),
                 "total": dish.total
             }
 

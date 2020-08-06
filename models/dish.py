@@ -25,6 +25,12 @@ class Dish(TimestampMixin, db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def get_all_dishes(self, **kwargs):
+        return self.query \
+            .order_by(self.id.desc()) \
+            .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
+
 class PrepInstruction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)

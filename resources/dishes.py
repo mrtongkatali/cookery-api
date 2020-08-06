@@ -14,10 +14,7 @@ class Dishes(Resource):
         if errors:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
         else:
-            dish = Dish.query \
-                .order_by(Dish.id.desc()) \
-                .paginate(int(req["page"]),int(req["size"]),error_out=False)
-
+            dish = Dish.get_all_dishes(**req)
             list = {
                 "list": DishSchema(many=True).dump(dish.items),
                 "total": dish.total

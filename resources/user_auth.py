@@ -9,7 +9,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
-class UserSignUpResource(Resource):
+class UserSignUp(Resource):
     def post(self):
         req = request.get_json(force=True)
         errors = UserValidationSchema().validate(req)
@@ -29,7 +29,7 @@ class UserSignUpResource(Resource):
                 dict(message="Successful.", data=UserSchema().dump(user))
             ), 200
 
-class UserAuthResource(Resource):
+class UserAuth(Resource):
     @jwt_required
     def get(self):
         if get_jwt_identity():

@@ -6,7 +6,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import DishSchema
 
-class DishesResource(Resource):
+class Dishes(Resource):
     def get(self):
         req = request.args
         errors = PaginationQSValidator().validate(req)

@@ -17,8 +17,7 @@ class UserSignUp(Resource):
         if errors:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
         else:
-            user = User.query.filter_by(username=req['username']).first()
-            if user:
+            if User.find_by_username(**req):
                 return ErrorSerializer().dump(dict(message=INTERNAL_ERROR, errors=['username already exists.'])), 500
 
             user = User(**req)
@@ -33,14 +32,14 @@ class UserAuth(Resource):
     @jwt_required
     def get(self):
         if get_jwt_identity():
-            user = User.query.get(get_jwt_identity())
+            user = User.find_by_id(get_jwt_identity())
             return dict(data=UserSchema().dump(user)), 200
         else:
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
     def post(self):
         req = request.get_json(force=True)
-        user = User.query.filter_by(username=req.get('username')).first()
+        user = User.find_by_username(**req)
 
         if user is not None:
             authorized = user.check_password(req.get('password'))

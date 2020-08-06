@@ -22,6 +22,14 @@ class User(TimestampMixin, db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def find_by_username(self, **kwargs):
+        return self.query.filter_by(username=kwargs["username"]).first()
+
+    @classmethod
+    def find_by_id(self, id):
+        return self.query.get(id)
+
     def __repr__(self):
         return '<User %r>' % self.username
 

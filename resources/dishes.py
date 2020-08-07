@@ -31,11 +31,11 @@ class DishResource(Resource):
     def patch(self, dish_id):
         if not get_jwt_identity(): return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
         else:
-            req = request.args
+            req = request.get_json(force=True)
+            print(req)
             errors = DishUpdateSerializer().validate(req)
 
-            if errors:
-                return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+            if errors: return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
             else:
                 return "asda"
 

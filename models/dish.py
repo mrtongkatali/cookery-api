@@ -31,6 +31,10 @@ class Dish(TimestampMixin, db.Model):
             .order_by(self.id.desc()) \
             .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
 
+    @classmethod
+    def find_by_id(self, dish_id):
+        return self.query.get(dish_id)
+
 class PrepInstruction(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)

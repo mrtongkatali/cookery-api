@@ -16,39 +16,40 @@ class UserSignUpResource(Resource):
 
         if errors:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
-        else:
-            if User.find_by_username(**req):
-                return ErrorSerializer().dump(dict(message=INTERNAL_ERROR, errors=['username already exists.'])), 500
 
-            user = User(**req)
-            user.hash_password()
-            user.save()
+        if User.find_by_username(**req):
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['username already exists.'])), 400
 
-            return SuccessSerializer().dump(
-                dict(message="Ok.", data=UserSchema().dump(user))
-            ), 200
+        user = User(**req)
+        user.hash_password()
+        user.save()
+
+        return SuccessSerializer().dump(
+            dict(message="Ok.", data=UserSchema().dump(user))
+        ), 200
 
 class UserAuthResource(Resource):
     @jwt_required
     def get(self):
-        if get_jwt_identity():
-            user = User.find_by_id(get_jwt_identity())
-            return dict(data=UserSchema().dump(user)), 200
-        else:
+        if not get_jwt_identity():
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+
+        user = User.find_by_id(get_jwt_identity())
+        return dict(data=UserSchema().dump(user)), 200
 
     def post(self):
         req = request.get_json(force=True)
         user = User.find_by_username(**req)
 
-        if user is not None:
-            authorized = user.check_password(req.get('password'))
-            if not authorized:
-                return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
-            else:
-                expires = timedelta(days=7)
-                access_token = create_access_token(identity=str(user.id), expires_delta=expires)
-
-                return dict(message="Authenticated", token=access_token), 200
-        else:
+        if user is None:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+
+        authorized = user.check_password(req.get('password'))
+
+        if not authorized:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+
+        expires = timedelta(days=7)
+        access_token = create_access_token(identity=str(user.id), expires_delta=expires)
+
+        return dict(message="Authenticated", token=access_token), 200

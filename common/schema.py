@@ -1,6 +1,7 @@
 from ma import ma
 from models.user import *
-from models.dish import *
+from models.dish import Dish, PrepInstruction
+from models.ingredients import Ingredients
 
 class UserSchema(ma.SQLAlchemySchema):
     class Meta:

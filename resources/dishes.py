@@ -32,7 +32,7 @@ class DishesResource(Resource):
 
 class DishResource(Resource):
     @jwt_required
-    def patch(self, dish_id):
+    def put(self, dish_id):
         if not get_jwt_identity():
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
@@ -42,9 +42,11 @@ class DishResource(Resource):
         if errors:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
 
-        data = Dish.find_by_id(dish_id)
+        dish = Dish.find_by_id(dish_id)
+        dish.update(req)
+
         return SuccessSerializer().dump(
-            dict(message="OK", data=DishSchema().dump(data))
+            dict(message="OK", data=DishSchema().dump(dish))
         ), 200
 
     @jwt_required
@@ -59,5 +61,10 @@ class DishResource(Resource):
         ), 200
 
 class PrepInstructionResource(Resource):
+    @jwt_required
     def patch(self):
-        pass
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+
+        req = request.get_json(force=True)
+        errors = DishUpdateSerializer().validate(req)

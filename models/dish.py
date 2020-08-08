@@ -25,6 +25,12 @@ class Dish(TimestampMixin, db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def update(self, data):
+        for key, item in data.items():
+          setattr(self, key, item)
+
+        db.session.commit()
+
     @classmethod
     def get_all_dishes(self, **kwargs):
         return self.query \

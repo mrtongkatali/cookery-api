@@ -7,7 +7,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import IngredientSchema
 
-class IngredientsResource(Resource):
+class PrepInstructionsResource(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():
@@ -16,7 +16,7 @@ class IngredientsResource(Resource):
         return "ok"
 
 
-class IngredientResource(Resource):
+class PrepInstructionResource(Resource):
     @jwt_required
     def get(self, ingr_id):
         if not get_jwt_identity():

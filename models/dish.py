@@ -1,6 +1,7 @@
 from db import db
 from models.mixins import TimestampMixin
-from models.ingredients import Ingredients
+from models.ingredient import Ingredients
+from models.prep_instruction import PrepInstruction
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,7 +17,7 @@ class Dish(TimestampMixin, db.Model):
     status = db.Column(db.Integer, default="1")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    instruction = db.relationship("PrepInstruction", backref="dish", uselist=True)
+    instruction = db.relationship(PrepInstruction, backref="dish", uselist=True)
     ingredients = db.relationship(Ingredients, backref="dish", uselist=True)
 
     def __repr__(self):
@@ -41,20 +42,6 @@ class Dish(TimestampMixin, db.Model):
     @classmethod
     def find_by_id(self, dish_id):
         return self.query.get(dish_id)
-
-class PrepInstruction(TimestampMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
-    main_dish = db.Column(db.Integer)
-    description = db.Column(db.Text())
-    step_order = db.Column(db.Integer)
-
-    def __repr__(self):
-        return '<Instruction %r>' % self.id
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
 
 class NutritionFacts(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

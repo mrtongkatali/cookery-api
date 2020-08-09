@@ -54,6 +54,9 @@ class DishResource(Resource):
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
 
         dish = Dish.find_by_id(dish_id)
+        if not dish:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Dish not found.'])), 400
+
         dish.update(req)
 
         return SuccessSerializer().dump(

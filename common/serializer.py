@@ -29,10 +29,9 @@ class DishUpdateSerializer(Schema):
     serving_count = fields.Integer(required=True)
 
 class IngredientUpdateSerializer(Schema):
-    amount = fields.Str(required=True, validate=Length(max=20))
+    amount = fields.Float(required=True)
     unit = fields.Integer(required=True)
-    ingredient_id = fields.Integer(required=True)
-    ingredient_name = fields.Integer(required=True)
+    ingredient_name = fields.Str(required=True, validate=Length(max=100))
     step_order = fields.Integer(required=True)
 
     # id = db.Column(db.Integer, primary_key=True)

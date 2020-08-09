@@ -39,9 +39,12 @@ class IngredientResource(Resource):
         if errors:
             return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
 
-        dish = Ingredients.find_by_id(ingr_id)
-        # dish.update(req)
+        ingredient = Ingredients.find_by_id(ingr_id)
+        if not ingredient:
+            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Ingredient not found.'])), 400
+
+        ingredient.update(req)
 
         return SuccessSerializer().dump(
-            dict(message="OK", data=DishSchema().dump(dish))
+            dict(message="OK", data=IngredientSchema().dump(ingredient))
         ), 200

@@ -52,4 +52,4 @@ class UserAuthResource(Resource):
         expires = timedelta(days=7)
         access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 
-        return dict(message="Authenticated", token=access_token), 200
+        return dict(message="Authenticated", token=access_token, user=UserSchema().dump(user)), 200

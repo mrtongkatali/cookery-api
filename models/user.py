@@ -8,6 +8,7 @@ class User(TimestampMixin, db.Model):
     firstname = db.Column(db.String(20), nullable=False)
     lastname = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(60))
+    isAdmin = db.Column(db.Integer, default="0")
     status = db.Column(db.Integer, default="1")
 
     user_profile = db.relationship("UserProfile", backref="user", uselist=False)

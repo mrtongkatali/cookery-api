@@ -11,6 +11,7 @@ class UserSchema(ma.SQLAlchemySchema):
     username = ma.auto_field()
     firstname = ma.auto_field()
     lastname = ma.auto_field()
+    isAdmin = ma.auto_field()
 
     user_profile = ma.Nested("UserProfileSchema")
 

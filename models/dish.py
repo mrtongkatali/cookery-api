@@ -35,8 +35,13 @@ class Dish(TimestampMixin, db.Model):
 
     @classmethod
     def get_all_dishes(self, **kwargs):
+        from sqlalchemy.sql import text
+
+        sort = kwargs["sort"] if "sort" in kwargs else "id desc"
+
+        # .order_by(self.id.desc()) \
         return self.query \
-            .order_by(self.id.desc()) \
+            .order_by(text(sort)) \
             .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
 
     @classmethod

@@ -9,6 +9,10 @@ from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
+class HelloWorldResource(Resource):
+    def get(self):
+        return "Hello World from the other side.."
+
 class UserSignUpResource(Resource):
     def post(self):
         req = request.get_json(force=True)

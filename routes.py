@@ -4,6 +4,7 @@ from resources.ingredients import *
 from resources.data_import import *
 
 def initialize_routes(api):
+    api.add_resource(HelloWorldResource, '/hello',)
     api.add_resource(UserSignUpResource, '/v1/user/sign-up',)
     api.add_resource(UserAuthResource, '/v1/user/auth',)
     api.add_resource(DishesResource,'/v1/dish/list',)

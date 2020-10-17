@@ -38,7 +38,7 @@ class Dish(TimestampMixin, db.Model):
         from sqlalchemy.sql import text
 
         sort = kwargs["sort"] if "sort" in kwargs else "id desc"
-
+        # sort = "id asc"
         # .order_by(self.id.desc()) \
         return self.query \
             .order_by(text(sort)) \

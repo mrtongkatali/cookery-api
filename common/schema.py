@@ -34,6 +34,8 @@ class DishSchema(ma.SQLAlchemySchema):
     cook_minute = ma.auto_field()
     serving_count = ma.auto_field()
     status = ma.auto_field()
+    created_at = ma.auto_field()
+    updated_at = ma.auto_field()
 
     ingredients = ma.Nested("IngredientSchema", many=True)
     instruction = ma.Nested("PrepInstructionSchema", many=True)

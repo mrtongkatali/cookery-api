@@ -1,6 +1,7 @@
 data/*
 backup/*
-.pyc
+*.pyc
+*.pyo
 __pycache__
 cookery_nginx.conf
 cookery_uwsgi.ini

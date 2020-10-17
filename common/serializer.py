@@ -16,7 +16,8 @@ class UserValidationSchema(Schema):
 class PaginationQSValidator(Schema):
     page = fields.Integer(required=True)
     size = fields.Integer(required=True)
-    fields = fields.Integer(required=False)
+    sort = fields.Str(required=False)
+    q = fields.Str(required=False)
 
 class DishUpdateSerializer(Schema):
     dish_name = fields.Str(required=True, validate=Length(max=100))

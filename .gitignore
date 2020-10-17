@@ -2,7 +2,7 @@ data/*
 backup/*
 *.pyc
 *.pyo
-__pycache__
+__pycache__/*
 cookery_nginx.conf
 cookery_uwsgi.ini
 cookeryapi.service

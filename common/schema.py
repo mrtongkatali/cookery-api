@@ -37,6 +37,7 @@ class DishSchema(ma.SQLAlchemySchema):
     created_at = ma.auto_field()
     updated_at = ma.auto_field()
 
+    user = ma.Nested("UserSchema", many=False)
     ingredients = ma.Nested("IngredientSchema", many=True)
     instruction = ma.Nested("PrepInstructionSchema", many=True)
 

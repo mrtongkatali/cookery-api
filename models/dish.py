@@ -2,11 +2,13 @@ from db import db
 from models.mixins import TimestampMixin
 from models.ingredient import Ingredients
 from models.prep_instruction import PrepInstruction
+from models.user import User
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_name = db.Column(db.String(100))
     main_dish = db.Column(db.Integer)
+    description = db.Column(db.String(600), nullable=True)
     course = db.Column(db.Integer)
     cuisine = db.Column(db.Integer)
     prep_hour = db.Column(db.Integer, default="0")
@@ -17,6 +19,8 @@ class Dish(TimestampMixin, db.Model):
     status = db.Column(db.Integer, default="1")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship(User)
     instruction = db.relationship(PrepInstruction, backref="dish", uselist=True)
     ingredients = db.relationship(Ingredients, backref="dish", uselist=True)
 

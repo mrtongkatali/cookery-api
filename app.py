@@ -14,7 +14,7 @@ app.config.from_object('settings.DevelopmentConfig')
 
 api = Api(app)
 # cors = CORS(app, resources={r"*": {"origins": "*"}})
-cors = CORS(app, resources={r"/v1/*": {"origins": "*"}, r"/v1/dish/*": {"origins": "*"}})
+# cors = CORS(app, resources={r"/v1/*": {"origins": "*"}, r"/v1/dish/*": {"origins": "*"}})
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 

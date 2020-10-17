@@ -11,13 +11,13 @@ class DishesResource(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+            return ErrorSerializer().dump(dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
         req = request.args
         errors = PaginationQSValidator().validate(req)
 
         if errors:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+            return ErrorSerializer().dump(dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors)), 400
 
         dish = Dish.get_all_dishes(**req)
         list = {
@@ -34,7 +34,7 @@ class DishResource(Resource):
     @jwt_required
     def get(self, dish_id):
         if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+            return ErrorSerializer().dump(code=CODE_UNAUTHORIZED, dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
         data = Dish.find_by_id(dish_id)
 
@@ -45,17 +45,17 @@ class DishResource(Resource):
     @jwt_required
     def put(self, dish_id):
         if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+            return ErrorSerializer().dump(dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
         req = request.get_json(force=True)
         errors = DishUpdateSerializer().validate(req)
 
         if errors:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+            return ErrorSerializer().dump(dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors)), 400
 
         dish = Dish.find_by_id(dish_id)
         if not dish:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Dish not found.'])), 400
+            return ErrorSerializer().dump(dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Dish not found.'])), 400
 
         dish.update(req)
 

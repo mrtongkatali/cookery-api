@@ -8,7 +8,7 @@ class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     dish_name = db.Column(db.String(100))
     main_dish = db.Column(db.Integer)
-    description = db.Column(db.String(600), nullable=True)
+    description = db.Column(db.Text, nullable=True)
     course = db.Column(db.Integer)
     cuisine = db.Column(db.Integer)
     prep_hour = db.Column(db.Integer, default="0")

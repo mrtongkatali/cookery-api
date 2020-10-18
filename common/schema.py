@@ -26,6 +26,7 @@ class DishSchema(ma.SQLAlchemySchema):
     id = ma.auto_field()
     dish_name = ma.auto_field()
     main_dish = ma.auto_field()
+    description = ma.auto_field()
     course = ma.auto_field()
     cuisine = ma.auto_field()
     prep_hour = ma.auto_field()

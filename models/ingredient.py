@@ -8,6 +8,7 @@ class Ingredients(TimestampMixin, db.Model):
     unit = db.Column(db.String(20))
     grocery_item_id = db.Column(db.Integer)
     ingredient_name = db.Column(db.String(200)) # for will be converted to just id after migration
+    additional_note = db.Column(db.Text(), nullable=True)
     main_dish = db.Column(db.Integer) # for tracking, can be deleted after migration
     step_order = db.Column(db.Integer)
 

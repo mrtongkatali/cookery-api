@@ -33,7 +33,7 @@ class IngredientUpdateSerializer(Schema):
     amount = fields.Float(required=True)
     unit = fields.Str(required=True, validate=Length(max=100))
     ingredient_name = fields.Str(required=True, validate=Length(max=100))
-    additional_note = fields.Str(required=True, validate=Length(max=1000))
+    additional_note = fields.Str(required=False, validate=Length(max=1000), allow_none=True)
     step_order = fields.Integer(required=True)
 
     # id = db.Column(db.Integer, primary_key=True)

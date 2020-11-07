@@ -17,7 +17,7 @@ class DishesResource(Resource):
                     message=UNAUTHORIZED_ERROR,
                     errors=['Invalid token. Please try again']
                 )
-            ), 401
+            ), 401, DEFAULT_HEADER
 
         req = request.args
         errors = PaginationQSValidator().validate(req)
@@ -29,7 +29,7 @@ class DishesResource(Resource):
                     message=BAD_REQUEST,
                     errors=errors
                 )
-            ), 400
+            ), 400, DEFAULT_HEADER
 
         dish = Dish.get_all_dishes(**req)
         list = {
@@ -52,7 +52,7 @@ class DishResource(Resource):
                     message=UNAUTHORIZED_ERROR,
                     errors=['Invalid token. Please try again']
                 )
-            ), 401
+            ), 401, DEFAULT_HEADER
 
         data = Dish.find_by_id(dish_id)
 
@@ -69,7 +69,7 @@ class DishResource(Resource):
                     message=UNAUTHORIZED_ERROR,
                     errors=['Invalid token. Please try again']
                 )
-            ), 401
+            ), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
         errors = DishUpdateSerializer().validate(req)
@@ -81,7 +81,7 @@ class DishResource(Resource):
                     message=BAD_REQUEST,
                     errors=errors
                 )
-            ), 400
+            ), 400, DEFAULT_HEADER
 
         dish = Dish.find_by_id(dish_id)
         if not dish:

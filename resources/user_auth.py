@@ -19,10 +19,14 @@ class UserSignUpResource(Resource):
         errors = UserValidationSchema().validate(req)
 
         if errors:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=errors)), 400
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=errors)
+            ), 400, DEFAULT_HEADER
 
         if User.find_by_username(**req):
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['username already exists.'])), 400
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['username already exists.'])
+            ), 400, DEFAULT_HEADER
 
         user = User(**req)
         user.hash_password()
@@ -46,12 +50,16 @@ class UserAuthResource(Resource):
         user = User.find_by_username(**req)
 
         if user is None:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
+            ), 400, DEFAULT_HEADER
 
         authorized = user.check_password(req.get('password'))
 
         if not authorized:
-            return ErrorSerializer().dump(dict(message=BAD_REQUEST, errors=['Invalid username or password.'])), 400
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
+            ), 400, DEFAULT_HEADER
 
         expires = timedelta(days=7)
         access_token = create_access_token(identity=str(user.id), expires_delta=expires)

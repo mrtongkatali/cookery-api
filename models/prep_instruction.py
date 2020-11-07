@@ -14,3 +14,13 @@ class PrepInstruction(TimestampMixin, db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    def update(self, data):
+        for key, item in data.items():
+          setattr(self, key, item)
+
+        db.session.commit()
+
+    @classmethod
+    def find_by_id(self, id):
+        return self.query.get(id)

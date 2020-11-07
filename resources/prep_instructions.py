@@ -2,10 +2,10 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from models.ingredient import Ingredients
+from models.prep_instruction import PrepInstruction
 from common.constant import *
 from common.serializer import *
-from common.schema import IngredientSchema
+from common.schema import PrepInstructionSchema
 
 class PrepInstructionsResource(Resource):
     @jwt_required
@@ -39,21 +39,21 @@ class PrepInstructionResource(Resource):
             ), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
-        errors = IngredientUpdateSerializer().validate(req)
+        errors = InstructionUpdateSerializer().validate(req)
 
         if errors:
             return ErrorSerializer().dump(
                 dict(message=BAD_REQUEST, errors=errors)
             ), 400, DEFAULT_HEADER
 
-        ingredient = Ingredients.find_by_id(ingr_id)
-        if not ingredient:
+        instruction = PrepInstruction.find_by_id(ingr_id)
+        if not instruction:
             return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=['Ingredient not found.'])
+                dict(message=BAD_REQUEST, errors=['Instruction not found.'])
             ), 400, DEFAULT_HEADER
 
-        ingredient.update(req)
+        instruction.update(req)
 
         return SuccessSerializer().dump(
-            dict(message="OK", data=IngredientSchema().dump(ingredient))
+            dict(message="OK", data=PrepInstructionSchema().dump(instruction))
         ), 200

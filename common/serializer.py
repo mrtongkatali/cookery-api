@@ -45,6 +45,10 @@ class IngredientUpdateSerializer(Schema):
     # main_dish = db.Column(db.Integer) # for tracking, can be deleted after migration
     # step_order = db.Column(db.Integer)
 
+class InstructionUpdateSerializer(Schema):
+    description = fields.Str(required=True, validate=Length(max=1000))
+    step_order = fields.Integer(required=True)
+
 class ErrorSerializer(Schema):
     message = fields.String()
     errors = fields.Dict()

@@ -1,6 +1,7 @@
 from resources.user_auth import *
 from resources.dishes import *
 from resources.ingredients import *
+from resources.prep_instructions import *
 from resources.data_import import *
 
 def initialize_routes(api):
@@ -17,6 +18,10 @@ def initialize_routes(api):
         '/v1/ingredients/new',
         '/v1/ingredients/update/<int:ingr_id>',
         '/v1/ingredients/<int:ingr_id>',
+    )
+    api.add_resource(PrepInstructionResource,
+        '/v1/instructions/update/<int:ingr_id>',
+        '/v1/instructions/<int:ingr_id>',
     )
     api.add_resource(DishImport, '/v1/dishes/import',)
 

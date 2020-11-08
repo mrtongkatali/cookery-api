@@ -29,6 +29,16 @@ class DishUpdateSerializer(Schema):
     cook_minute = fields.Integer(required=True)
     serving_count = fields.Integer(required=True)
 
+class IngredientNewSerializer(Schema):
+    dish_id = fields.Integer(required=True)
+    grocery_item_id = fields.Integer(required=True)
+    main_dish = fields.Integer(required=True)
+    amount = fields.Float(required=True)
+    unit = fields.Str(required=True, validate=Length(max=100))
+    ingredient_name = fields.Str(required=True, validate=Length(max=100))
+    additional_note = fields.Str(required=False, validate=Length(max=1000), allow_none=True)
+    step_order = fields.Integer(required=True)
+
 class IngredientUpdateSerializer(Schema):
     amount = fields.Float(required=True)
     unit = fields.Str(required=True, validate=Length(max=100))

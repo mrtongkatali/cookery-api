@@ -28,6 +28,30 @@ class IngredientResource(Resource):
         ), 200
 
     @jwt_required
+    def post(self):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        req = request.get_json(force=True)
+        errors = IngredientNewSerializer().validate(req)
+
+        if errors:
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=errors)
+            ), 401, DEFAULT_HEADER
+
+        # ingredient = Ingredients(**req)
+        # ingredient.save(req)
+
+        # return SuccessSerializer().dump(
+        #     dict(message="OK", data=IngredientSchema().dump(ingredient))
+        # ), 200
+
+        return "success", 200
+
+    @jwt_required
     def put(self, ingr_id):
         if not get_jwt_identity():
             return ErrorSerializer().dump(

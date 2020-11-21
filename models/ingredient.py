@@ -11,6 +11,7 @@ class Ingredients(TimestampMixin, db.Model):
     additional_note = db.Column(db.Text(), nullable=True)
     main_dish = db.Column(db.Integer) # for tracking, can be deleted after migration
     step_order = db.Column(db.Integer)
+    status = db.Column(db.Integer)
 
     def save(self):
         db.session.add(self)

@@ -77,3 +77,22 @@ class IngredientResource(Resource):
         return SuccessSerializer().dump(
             dict(message="OK", data=IngredientSchema().dump(ingredient))
         ), 200
+
+    @jwt_required
+    def delete(self, ingr_id):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+
+        ingredient = Ingredients.find_by_id(ingr_id)
+
+        if not ingredient:
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['Ingredient not found.'])
+            ), 400, DEFAULT_HEADER
+
+        ingredient.status = 0
+        ingredient.update()
+
+        return SuccessSerializer().dump(
+            dict(message="OK", data=IngredientSchema().dump(data))
+        ), 200

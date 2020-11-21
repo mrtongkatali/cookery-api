@@ -18,6 +18,7 @@ def initialize_routes(api):
         '/v1/ingredients/new',
         '/v1/ingredients/update/<int:ingr_id>',
         '/v1/ingredients/<int:ingr_id>',
+        '/v1/ingredients/remove/<int:ingr_id>',
     )
     api.add_resource(PrepInstructionResource,
         '/v1/instructions/update/<int:ingr_id>',

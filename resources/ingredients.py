@@ -53,7 +53,7 @@ class IngredientResource(Resource):
                 dict(message="OK", data=IngredientSchema().dump(ingredient))
             ), 200
         except Exception as e:
-            # logs the error
+            # log the error here
             return ErrorSerializer().dump(
                 dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.'])
             ), 401, DEFAULT_HEADER
@@ -73,17 +73,24 @@ class IngredientResource(Resource):
                 dict(message=BAD_REQUEST, errors=errors)
             ), 401, DEFAULT_HEADER
 
-        ingredient = Ingredients.find_by_id(ingr_id)
-        if not ingredient:
+        try:
+            ingredient = Ingredients.find_by_id(ingr_id)
+            if not ingredient:
+                return ErrorSerializer().dump(
+                    dict(message=BAD_REQUEST, errors=['Ingredient not found.'])
+                ), 400, DEFAULT_HEADER
+
+            ingredient.update(req)
+
+            return SuccessSerializer().dump(
+                dict(message="OK", data=IngredientSchema().dump(ingredient))
+            ), 200
+
+        except Exception as e:
+            # log the error here
             return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=['Ingredient not found.'])
-            ), 400, DEFAULT_HEADER
-
-        ingredient.update(req)
-
-        return SuccessSerializer().dump(
-            dict(message="OK", data=IngredientSchema().dump(ingredient))
-        ), 200
+                dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.'])
+            ), 401, DEFAULT_HEADER
 
     @jwt_required
     def delete(self, ingr_id):

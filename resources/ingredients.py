@@ -42,14 +42,21 @@ class IngredientResource(Resource):
                 dict(message=BAD_REQUEST, errors=errors)
             ), 401, DEFAULT_HEADER
 
-        # ingredient = Ingredients(**req)
-        # ingredient.save(req)
+        try:
+            ingredient = Ingredients(**req)
+            ingredient.grocery_item_id = 1 # Set as default 1 for now
+            ingredient.main_dish = 1 # Set as default 1 for now
+            ingredient.status = 1 # Active as default
+            ingredient.save()
 
-        # return SuccessSerializer().dump(
-        #     dict(message="OK", data=IngredientSchema().dump(ingredient))
-        # ), 200
-
-        return "success", 200
+            return SuccessSerializer().dump(
+                dict(message="OK", data=IngredientSchema().dump(ingredient))
+            ), 200
+        except Exception as e:
+            # logs the error
+            return ErrorSerializer().dump(
+                dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.'])
+            ), 401, DEFAULT_HEADER
 
     @jwt_required
     def put(self, ingr_id):

@@ -31,8 +31,8 @@ class DishUpdateSerializer(Schema):
 
 class IngredientNewSerializer(Schema):
     dish_id = fields.Integer(required=True)
-    grocery_item_id = fields.Integer(required=True)
-    main_dish = fields.Integer(required=True)
+    # grocery_item_id = fields.Integer(required=True)
+    # main_dish = fields.Integer(required=True)
     amount = fields.Float(required=True)
     unit = fields.Str(required=True, validate=Length(max=100))
     ingredient_name = fields.Str(required=True, validate=Length(max=100))

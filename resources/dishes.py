@@ -7,6 +7,8 @@ from common.constant import *
 from common.serializer import *
 from common.schema import DishSchema
 
+# from flask import current_app as app
+
 class DishesResource(Resource):
     @jwt_required
     def get(self):
@@ -56,8 +58,18 @@ class DishResource(Resource):
 
         data = Dish.find_by_id(dish_id)
 
+        # res = Collection(data.ingredients).get_active()
+        # app.logger.info(res)
+
+        schema = DishSchema().dump(data)
+
+        # schema['ingredients'] = list(map(
+        #     lambda ingr: ingr,
+        #     filter(lambda i: i['status'] == 1, schema['ingredients'])
+        # ))
+
         return SuccessSerializer().dump(
-            dict(message="OK", data=DishSchema().dump(data))
+            dict(message="ok", data=schema)
         ), 200
 
     @jwt_required

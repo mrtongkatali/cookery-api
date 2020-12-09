@@ -26,3 +26,6 @@ class Ingredients(TimestampMixin, db.Model):
     @classmethod
     def find_by_id(self, ingr_id):
         return self.query.get(ingr_id)
+
+    def find_all_active(self, ingr_id):
+        return self.query.filter(id=ingr_id, status=1)

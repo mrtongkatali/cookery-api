@@ -7,6 +7,7 @@ class PrepInstruction(TimestampMixin, db.Model):
     main_dish = db.Column(db.Integer)
     description = db.Column(db.Text())
     step_order = db.Column(db.Integer)
+    status = db.Column(db.Integer, default="1")
 
     def __repr__(self):
         return '<Instruction %r>' % self.id

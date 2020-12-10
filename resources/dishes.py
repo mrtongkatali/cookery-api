@@ -7,8 +7,6 @@ from common.constant import *
 from common.serializer import *
 from common.schema import DishSchema
 
-# from flask import current_app as app
-
 class DishesResource(Resource):
     @jwt_required
     def get(self):

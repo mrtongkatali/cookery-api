@@ -6,7 +6,6 @@ from models.user import User
 
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager, aliased, selectinload
 from sqlalchemy import and_, or_
-from flask import current_app as app
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,7 +64,6 @@ class Dish(TimestampMixin, db.Model):
         if query is not None:
             query.ingredients = list(filter(lambda i: i.status == 1, query.ingredients))
             # query.instruction = list(filter(lambda i: i.status == 1, query.instruction))
-        # app.logger.info(res)
 
         return query
 

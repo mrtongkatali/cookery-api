@@ -1,9 +1,11 @@
-# from flask import Flask
+from flask import Flask
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-from app import app
 from db import db
+
+app = Flask(__name__)
+app.config.from_object('settings.DevelopmentConfig')
 
 migrate = Migrate(app, db)
 manager = Manager(app)

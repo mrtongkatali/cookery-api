@@ -9,18 +9,16 @@ from routes import initialize_routes
 
 from db import db
 
-# app = Flask(__name__)
-# app.config.from_object('settings.DevelopmentConfig')
-
-# api = Api(app)
-# cors = CORS(app, resources={r"*": {"origins": "*"}})
-# cors = CORS(app, resources={r"/v1/*": {"origins": "*"}, r"/v1/dish/*": {"origins": "*"}})
-# bcrypt = Bcrypt(app)
-# jwt = JWTManager(app)
-
-def create_app(debug=True):
+def create_app(env):
     app = Flask(__name__)
-    app.config.from_object('settings.DevelopmentConfig')
+
+    app.logger.info(env)
+    if env is "production":
+        pass
+    elif env is "staging":
+        pass
+    else:
+        app.config.from_object('settings.DevelopmentConfig')
 
     api = Api(app)
     bcrypt = Bcrypt(app)
@@ -32,7 +30,7 @@ def create_app(debug=True):
     return app
 
 def main():
-    create_app()
+    create_app("dev")
     app.run()
 
 if __name__ == '__main__':

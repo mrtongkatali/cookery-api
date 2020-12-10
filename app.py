@@ -1,8 +1,10 @@
+import logging
+from logging import Formatter, FileHandler
+
 from flask import Flask
 from flask_restful import Api
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
-# from flask_cors import CORS
 
 from settings import *
 from routes import initialize_routes
@@ -12,11 +14,10 @@ from db import db
 def create_app(env):
     app = Flask(__name__)
 
-    app.logger.info(env)
-    if env is "production":
-        pass
-    elif env is "staging":
-        pass
+    if env == "production":
+        app.config.from_object('settings.ProductionConfig')
+    elif env == "staging":
+        app.config.from_object('settings.StagingConfig')
     else:
         app.config.from_object('settings.DevelopmentConfig')
 

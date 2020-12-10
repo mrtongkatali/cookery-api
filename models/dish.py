@@ -1,3 +1,5 @@
+import logging
+
 from db import db
 from models.mixins import TimestampMixin
 from models.ingredient import Ingredients
@@ -6,6 +8,8 @@ from models.user import User
 
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager, aliased, selectinload
 from sqlalchemy import and_, or_
+
+logger = logging.getLogger("app.access")
 
 class Dish(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

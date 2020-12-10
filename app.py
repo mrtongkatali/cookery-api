@@ -10,6 +10,7 @@ from routes import register_routes
 
 from db import db
 from extensions import *
+from datetime import datetime as dt
 
 def create_app(env):
     app = Flask(__name__)
@@ -27,6 +28,9 @@ def create_app(env):
 
     register_extensions(app)
     register_routes(api)
+
+    # logger = logging.getLogger("app.access")
+    # logging.info('info on app.vue')
 
     return app
 

@@ -3,7 +3,7 @@ from environs import Env
 
 env = Env()
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig():
     env.read_env(".env.dev", recurse=False)
 
     SECRET_KEY = env.str('SECRET_KEY')
@@ -14,7 +14,7 @@ class DevelopmentConfig(Config):
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
 
-class StagingConfig(Config):
+class StagingConfig():
     env.read_env(".env.dev", recurse=False)
 
     SECRET_KEY = env.str('SECRET_KEY')
@@ -25,7 +25,7 @@ class StagingConfig(Config):
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
 
-class ProductionConfig(Config):
+class ProductionConfig():
     env.read_env(".env.dev", recurse=False)
 
     SECRET_KEY = env.str('SECRET_KEY')
@@ -36,7 +36,7 @@ class ProductionConfig(Config):
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
 
-class TestConfig(Config):
+class TestConfig():
     env.read_env(".env.dev", recurse=False)
 
     SECRET_KEY = env.str('SECRET_KEY')

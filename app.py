@@ -1,5 +1,4 @@
 import logging
-from logging import Formatter, FileHandler
 
 from flask import Flask
 from flask_restful import Api
@@ -7,9 +6,10 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
 from settings import *
-from routes import initialize_routes
+from routes import register_routes
 
 from db import db
+from extensions import *
 
 def create_app(env):
     app = Flask(__name__)
@@ -25,10 +25,16 @@ def create_app(env):
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
 
-    initialize_routes(api)
-    db.init_app(app)
+    register_extensions(app)
+    register_routes(api)
 
     return app
+
+def register_extensions(app):
+    logs.init_app(app)
+    db.init_app(app)
+
+    return None
 
 def main():
     create_app("dev")

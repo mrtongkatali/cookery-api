@@ -47,9 +47,14 @@ class Dish(TimestampMixin, db.Model):
         sort = kwargs["sort"] if "sort" in kwargs else "id desc"
         # sort = "id asc"
         # .order_by(self.id.desc()) \
-        return self.query \
-            .order_by(text(sort)) \
+
+        query = (
+            db.session.query(Dish)
+            .order_by(text(sort))
             .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
+        )
+
+        return query
 
     @classmethod
     def find_by_id(self, dish_id):
@@ -63,7 +68,7 @@ class Dish(TimestampMixin, db.Model):
         # @NOTE: Workaround, manually filter the active
         if query is not None:
             query.ingredients = list(filter(lambda i: i.status == 1, query.ingredients))
-            # query.instruction = list(filter(lambda i: i.status == 1, query.instruction))
+            query.instruction = list(filter(lambda i: i.status == 1, query.instruction))
 
         return query
 

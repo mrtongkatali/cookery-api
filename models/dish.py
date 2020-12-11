@@ -52,8 +52,12 @@ class Dish(TimestampMixin, db.Model):
         # .order_by(self.id.desc()) \
 
         try:
+            fields = ['id', 'dish_name', 'main_dish', 'description', 'course', 'cuisine', 'prep_hour', 'prep_minute', 'cook_hour', 'cook_minute', 'serving_count', 'status']
+            entities = [getattr(Dish, field) for field in fields]
+
             query = (
-                db.session.query(Dish)
+                db.session.query()
+                .with_entities(*entities)
                 .order_by(text(sort))
                 .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
             )

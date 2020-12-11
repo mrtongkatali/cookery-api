@@ -26,6 +26,7 @@ uwsgi-tools = "*"
 gunicorn = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
 environs = "*"
+flask-swagger = "*"
 
 [requires]
 python_version = "3.6"

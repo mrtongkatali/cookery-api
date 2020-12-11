@@ -6,8 +6,9 @@ from models.ingredient import Ingredients
 from models.prep_instruction import PrepInstruction
 from models.user import User
 
+from sqlalchemy.sql import text
 from sqlalchemy.orm import joinedload, subqueryload, contains_eager, aliased, selectinload
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, not_
 
 logger = logging.getLogger("app.access")
 
@@ -46,35 +47,45 @@ class Dish(TimestampMixin, db.Model):
 
     @classmethod
     def get_all_dishes(self, **kwargs):
-        from sqlalchemy.sql import text
-
-        sort = kwargs["sort"] if "sort" in kwargs else "id desc"
+        sort = kwargs["sort"] if "sort" in kwargs else "dish.id desc"
         # sort = "id asc"
         # .order_by(self.id.desc()) \
 
-        query = (
-            db.session.query(Dish)
-            .order_by(text(sort))
-            .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
-        )
+        try:
+            query = (
+                db.session.query(Dish)
+                .order_by(text(sort))
+                .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
+            )
 
-        return query
+            return query
+        except Exception as e:
+            logging.debug(e)
 
     @classmethod
     def find_by_id(self, dish_id):
-        dish = aliased(Dish)
-        query = (
-            db.session.query(dish)
-            .options(selectinload('ingredients'))
-            .options(selectinload('instruction'))
-        ).filter(dish.id == dish_id).scalar()
+        try:
+            query = (
+                db.session.query(Dish)
+                .options(contains_eager(Dish.ingredients))
+                .join(Ingredients)
+                .options(contains_eager(Dish.instruction))
+                .join(PrepInstruction)
+                .filter(
+                    and_(
+                        Dish.id == dish_id,
+                        Ingredients.status == 1,
+                        PrepInstruction.status == 1
+                    )
+                )
+                .order_by(Ingredients.step_order.asc())
+                .order_by(PrepInstruction.step_order.asc())
+                .scalar()
+            )
 
-        # @NOTE: Workaround, manually filter the active
-        if query is not None:
-            query.ingredients = list(filter(lambda i: i.status == 1, query.ingredients))
-            query.instruction = list(filter(lambda i: i.status == 1, query.instruction))
-
-        return query
+            return query
+        except Exception as e:
+            logging.debug(e)
 
 class NutritionFacts(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

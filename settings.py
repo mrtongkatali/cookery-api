@@ -5,7 +5,7 @@ env = Env()
 
 class Config():
     LOG_TYPE = env.str("LOG_TYPE", "debug")  # Default is a Stream handler
-    LOG_LEVEL = env.str("LOG_LEVEL", "INFO")
+    LOG_LEVEL = env.str("LOG_LEVEL", "DEBUG")
 
     # File Logging Setup
     LOG_DIR = env.str("LOG_DIR", "/var/log/crazyapp/cookery")

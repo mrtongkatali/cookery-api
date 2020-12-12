@@ -48,7 +48,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_ECHO = True
 
 class TestConfig(Config):
-    env.read_env(".env.dev", recurse=False)
+    env.read_env(".env.testing", recurse=False)
 
     SECRET_KEY = env.str('SECRET_KEY')
     DEBUG = env.bool('DEBUG')

@@ -19,6 +19,8 @@ def create_app(env):
         app.config.from_object('settings.ProductionConfig')
     elif env == "staging":
         app.config.from_object('settings.StagingConfig')
+    elif env == "testing":
+        app.config.from_object('settings.TestConfig')
     else:
         app.config.from_object('settings.DevelopmentConfig')
 

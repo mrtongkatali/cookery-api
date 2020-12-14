@@ -1,8 +1,11 @@
 import unittest
 import json
 
-from . import app
-from . import db
+import sys
+sys.path.append('..')
+
+from app import current_app
+from db import db
 
 class SignUpTest(unittest.TestCase):
     def setUp(self):

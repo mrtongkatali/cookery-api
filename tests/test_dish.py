@@ -3,6 +3,6 @@ import json
 
 from test import BaseCase
 
-class AuthTest(BaseCase):
-    def test_sign_up(self):
+class DishTest(BaseCase):
+    def test_create_dish(self):
         self.assertEqual(200, 1)

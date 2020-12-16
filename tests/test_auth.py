@@ -3,6 +3,6 @@ import json
 
 from test import BaseCase
 
-class SignUpTest(BaseCase):
-    def test_success(self):
+class AuthTest(BaseCase):
+    def test_sign_up(self):
         self.assertEqual(200, 200)

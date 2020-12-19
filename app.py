@@ -43,8 +43,8 @@ def create_app(env):
     register_extensions(app)
     register_routes(api)
 
-    # logger = logging.getLogger("app.access")
-    # logging.info('info on app.vue')
+    logger = logging.getLogger("app.access")
+    logging.info('info on app.vue')
 
     return app
 

@@ -7,10 +7,13 @@ sys.path.append('..')
 from app import setup_test
 from db import db
 
+from models.user import User
+
 class BaseCase(unittest.TestCase):
     def setUp(self):
         self.app = setup_test()
-        # self.client = self.app.test_client
+        self.app.app_context().push()
+
         with self.app.app_context():
             db.create_all()
 

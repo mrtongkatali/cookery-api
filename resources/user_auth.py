@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from flask import request
@@ -48,6 +49,9 @@ class UserAuthResource(Resource):
     def post(self):
         req = request.get_json(force=True)
         user = User.find_by_username(**req)
+
+        # logger = logging.getLogger("app.access")
+        # logging.info(user.username)
 
         if user is None:
             return ErrorSerializer().dump(

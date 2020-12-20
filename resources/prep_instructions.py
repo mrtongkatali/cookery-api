@@ -19,20 +19,54 @@ class PrepInstructionsResource(Resource):
 
 class PrepInstructionResource(Resource):
     @jwt_required
-    def get(self, ingr_id):
+    def post(self):
         if not get_jwt_identity():
             return ErrorSerializer().dump(
                 dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
             ), 401, DEFAULT_HEADER
 
-        data = Ingredients.find_by_id(ingr_id)
+        req = request.get_json(force=True)
+        errors = InstructionNewSerializer().validate(req)
+
+        if errors:
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=errors)
+            ), 400, DEFAULT_HEADER
+
+        ins = PrepInstruction.find_last_step(req['dish_id'])
+        step_order = 1 if ins is None else ins.step_order + 1
+
+        ins = PrepInstruction(**req)
+        ins.step_order = step_order
+        ins.main_dish = 1
+        ins.status = 1
+        ins.save()
 
         return SuccessSerializer().dump(
-            dict(message="OK", data=IngredientSchema().dump(data))
+            dict(message="OK", data=PrepInstructionSchema().dump(ins))
         ), 200
 
     @jwt_required
-    def put(self, ingr_id):
+    def get(self, instr_id):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        return "hello world"
+        # if not get_jwt_identity():
+        #     return ErrorSerializer().dump(
+        #         dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+        #     ), 401, DEFAULT_HEADER
+        #
+        # data = PrepInstruction.find_by_id(instr_id)
+        #
+        # return SuccessSerializer().dump(
+        #     dict(message="OK", data=IngredientSchema().dump(data))
+        # ), 200
+
+    @jwt_required
+    def put(self, instr_id):
         if not get_jwt_identity():
             return ErrorSerializer().dump(
                 dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
@@ -46,7 +80,7 @@ class PrepInstructionResource(Resource):
                 dict(message=BAD_REQUEST, errors=errors)
             ), 400, DEFAULT_HEADER
 
-        instruction = PrepInstruction.find_by_id(ingr_id)
+        instruction = PrepInstruction.find_by_id(instr_id)
         if not instruction:
             return ErrorSerializer().dump(
                 dict(message=BAD_REQUEST, errors=['Instruction not found.'])

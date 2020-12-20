@@ -46,14 +46,9 @@ class IngredientUpdateSerializer(Schema):
     additional_note = fields.Str(required=False, validate=Length(max=1000), allow_none=True)
     step_order = fields.Integer(required=True)
 
-    # id = db.Column(db.Integer, primary_key=True)
-    # dish_id = db.Column(db.Integer, db.ForeignKey('dish.id'), nullable=False)
-    # amount = db.Column(db.String(20))
-    # unit = db.Column(db.String(20))
-    # ingredient_id = db.Column(db.Integer)
-    # ingredient_name = db.Column(db.String(200)) # for will be converted to just id after migration
-    # main_dish = db.Column(db.Integer) # for tracking, can be deleted after migration
-    # step_order = db.Column(db.Integer)
+class InstructionNewSerializer(Schema):
+    dish_id = fields.Integer(required=True)
+    description = fields.Str(required=True)
 
 class InstructionUpdateSerializer(Schema):
     description = fields.Str(required=True, validate=Length(max=1000))

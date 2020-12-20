@@ -21,6 +21,7 @@ def register_routes(api):
         '/v1/ingredients/remove/<int:ingr_id>',
     )
     api.add_resource(PrepInstructionResource,
+        '/v1/instructions/new',
         '/v1/instructions/update/<int:ingr_id>',
         '/v1/instructions/<int:ingr_id>',
     )

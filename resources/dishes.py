@@ -7,7 +7,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import DishSchema
 
-class DishesResource(Resource):
+class DishesAPI(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():
@@ -42,7 +42,7 @@ class DishesResource(Resource):
             dict(message="OK", data=list)
         ), 200
 
-class DishResource(Resource):
+class DishAPI(Resource):
     @jwt_required
     def get(self, dish_id):
         if not get_jwt_identity():

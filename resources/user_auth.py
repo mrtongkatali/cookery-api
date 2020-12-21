@@ -10,11 +10,11 @@ from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
-class HelloWorldResource(Resource):
+class HelloWorldAPI(Resource):
     def get(self):
         return "Hello World from the other side.."
 
-class UserSignUpResource(Resource):
+class UserSignUpAPI(Resource):
     def post(self):
         req = request.get_json(force=True)
         errors = UserValidationSchema().validate(req)
@@ -37,7 +37,7 @@ class UserSignUpResource(Resource):
             dict(message="Ok.", data=UserSchema().dump(user))
         ), 200
 
-class UserAuthResource(Resource):
+class UserAuthAPI(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():

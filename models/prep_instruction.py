@@ -26,7 +26,10 @@ class PrepInstruction(TimestampMixin, db.Model):
 
     @classmethod
     def find_by_id(self, id):
-        return self.query.get(id)
+        try:
+            return self.query.get(id)
+        except Exception as e:
+            logging.debug(f"[error] PrepInstruction.find_by_id({id}) => {e}")
 
     @classmethod
     def find_last_step(self, dish_id):

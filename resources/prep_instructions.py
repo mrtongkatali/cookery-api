@@ -19,6 +19,20 @@ class PrepInstructionsResource(Resource):
 
 class PrepInstructionResource(Resource):
     @jwt_required
+    def get(self, instr_id):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        data = PrepInstruction.find_by_id(instr_id)
+        schema = PrepInstructionSchema().dump(data)
+
+        return SuccessSerializer().dump(
+            dict(message="ok", data=schema)
+        ), 200
+
+    @jwt_required
     def post(self):
         if not get_jwt_identity():
             return ErrorSerializer().dump(
@@ -45,25 +59,6 @@ class PrepInstructionResource(Resource):
         return SuccessSerializer().dump(
             dict(message="OK", data=PrepInstructionSchema().dump(ins))
         ), 200
-
-    @jwt_required
-    def get(self, instr_id):
-        if not get_jwt_identity():
-            return ErrorSerializer().dump(
-                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
-            ), 401, DEFAULT_HEADER
-
-        return "hello world"
-        # if not get_jwt_identity():
-        #     return ErrorSerializer().dump(
-        #         dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
-        #     ), 401, DEFAULT_HEADER
-        #
-        # data = PrepInstruction.find_by_id(instr_id)
-        #
-        # return SuccessSerializer().dump(
-        #     dict(message="OK", data=IngredientSchema().dump(data))
-        # ), 200
 
     @jwt_required
     def put(self, instr_id):

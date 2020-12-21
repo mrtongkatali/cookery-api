@@ -22,8 +22,8 @@ def register_routes(api):
     )
     api.add_resource(PrepInstructionResource,
         '/v1/instructions/new',
-        '/v1/instructions/update/<int:ingr_id>',
-        '/v1/instructions/<int:ingr_id>',
+        '/v1/instructions/update/<int:instr_id>',
+        '/v1/instructions/<int:instr_id>',
     )
     api.add_resource(DishImport, '/v1/dishes/import',)
 

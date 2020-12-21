@@ -94,6 +94,7 @@ class DishResource(Resource):
             ), 400, DEFAULT_HEADER
 
         dish = Dish.find_by_id(dish_id)
+
         if not dish:
             return ErrorSerializer().dump(dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Dish not found.'])), 400
 

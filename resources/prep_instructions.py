@@ -7,15 +7,15 @@ from common.constant import *
 from common.serializer import *
 from common.schema import PrepInstructionSchema
 
-class PrepInstructionsResource(Resource):
-    @jwt_required
-    def get(self):
-        if not get_jwt_identity():
-            return ErrorSerializer().dump(
-                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
-            ), 401, DEFAULT_HEADER
-
-        return "ok"
+# class PrepInstructionsResource(Resource):
+#     @jwt_required
+#     def get(self):
+#         if not get_jwt_identity():
+#             return ErrorSerializer().dump(
+#                 dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+#             ), 401, DEFAULT_HEADER
+#
+#         return "ok"
 
 class PrepInstructionResource(Resource):
     @jwt_required

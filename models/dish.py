@@ -64,7 +64,7 @@ class Dish(TimestampMixin, db.Model):
 
             return query
         except Exception as e:
-            logging.debug(e)
+            logging.debug(f"[err] Dish.get_all_dishes :: {kwargs} => {e}")
 
     @classmethod
     def find_by_id(self, dish_id):
@@ -89,7 +89,7 @@ class Dish(TimestampMixin, db.Model):
 
             return query
         except Exception as e:
-            logging.debug(e)
+            logging.debug(f"[err] Dish.find_by_id({dish_id}) => {e}")
 
 class NutritionFacts(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)

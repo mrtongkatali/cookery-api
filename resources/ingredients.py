@@ -7,15 +7,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import IngredientSchema
 
-class IngredientsResource(Resource):
-    @jwt_required
-    def get(self):
-        if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
-
-        return "ok"
-
-class IngredientResource(Resource):
+class IngredientAPI(Resource):
     @jwt_required
     def get(self, ingr_id):
         if not get_jwt_identity():
@@ -92,8 +84,9 @@ class IngredientResource(Resource):
                 dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.'])
             ), 401, DEFAULT_HEADER
 
+class RemoveIngredientAPI(Resource):
     @jwt_required
-    def delete(self, ingr_id):
+    def post(self, ingr_id):
         if not get_jwt_identity():
             return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
@@ -105,8 +98,6 @@ class IngredientResource(Resource):
             ), 400, DEFAULT_HEADER
 
         ingredient.status = 0
-        ingredient.update()
+        ingredient.save()
 
-        return SuccessSerializer().dump(
-            dict(message="OK", data=IngredientSchema().dump(data))
-        ), 200
+        return dict(message="Successfully deleted."), 200

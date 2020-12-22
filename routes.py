@@ -15,16 +15,21 @@ def register_routes(api):
         '/v1/dish/update/<int:dish_id>',
         '/v1/dish/<int:dish_id>',
     )
-    api.add_resource(IngredientResource,
+    api.add_resource(IngredientAPI,
         '/v1/ingredients/new',
         '/v1/ingredients/update/<int:ingr_id>',
-        '/v1/ingredients/<int:ingr_id>',
+        '/v1/ingredients/<int:ingr_id>'
+    )
+    api.add_resource(RemoveIngredientAPI,
         '/v1/ingredients/remove/<int:ingr_id>',
     )
     api.add_resource(PrepInstructionAPI,
         '/v1/instructions/new',
         '/v1/instructions/update/<int:instr_id>',
         '/v1/instructions/<int:instr_id>',
+    )
+    api.add_resource(RemoveInstructionAPI,
+        '/v1/instructions/remove/<int:instr_id>',
     )
     api.add_resource(DishImport, '/v1/dishes/import',)
 

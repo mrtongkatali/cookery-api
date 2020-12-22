@@ -78,4 +78,26 @@ class PrepInstructionAPI(Resource):
         ), 200
 
 class RemoveInstructionAPI(Resource):
-    pass
+    @jwt_required
+    def post(self, instr_id):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        instruction = PrepInstruction.find_by_id(instr_id)
+
+        if not instruction:
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['Instruction not found.'])
+            ), 400, DEFAULT_HEADER
+
+        instruction.status = 0
+        instruction.save()
+
+        return dict(message="Successfully deleted."), 200

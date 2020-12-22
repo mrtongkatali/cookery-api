@@ -103,3 +103,28 @@ class DishAPI(Resource):
         return SuccessSerializer().dump(
             dict(message="OK", data=DishSchema().dump(dish))
         ), 200
+
+class RemoveDishAPI(Resource):
+    @jwt_required
+    def post(self, dish_id):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])
+            ), 401, DEFAULT_HEADER
+
+        dish = Dish.find_by_id(dish_id)
+
+        if not dish:
+            return ErrorSerializer().dump(
+                dict(message=BAD_REQUEST, errors=['Dish not found.'])
+            ), 400, DEFAULT_HEADER
+
+        dish.status = 0
+        dish.save()
+
+        return dict(message="Successfully deleted."), 200

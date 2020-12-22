@@ -19,6 +19,9 @@ def register_routes(api):
         '/v1/dish/update/<int:dish_id>',
         '/v1/dish/<int:dish_id>',
     )
+    api.add_resource(RemoveDishAPI,
+        '/v1/dish/remove/<int:dish_id>',
+    )
 
     # Ingredient
     api.add_resource(IngredientAPI,

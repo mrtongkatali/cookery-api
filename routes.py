@@ -5,16 +5,22 @@ from resources.prep_instructions import *
 from resources.data_import import *
 
 def register_routes(api):
+    # Test URL
     api.add_resource(HelloWorldAPI, '/hello',)
+
+    # User Auth
     api.add_resource(UserSignUpAPI, '/v1/user/sign-up',)
     api.add_resource(UserAuthAPI, '/v1/user/auth',)
 
+    # Dish
     api.add_resource(DishesAPI,'/v1/dish/list',)
     api.add_resource(DishAPI,
         '/v1/dish/new',
         '/v1/dish/update/<int:dish_id>',
         '/v1/dish/<int:dish_id>',
     )
+
+    # Ingredient
     api.add_resource(IngredientAPI,
         '/v1/ingredients/new',
         '/v1/ingredients/update/<int:ingr_id>',
@@ -23,6 +29,8 @@ def register_routes(api):
     api.add_resource(RemoveIngredientAPI,
         '/v1/ingredients/remove/<int:ingr_id>',
     )
+
+    # PreparationInstruction
     api.add_resource(PrepInstructionAPI,
         '/v1/instructions/new',
         '/v1/instructions/update/<int:instr_id>',
@@ -31,6 +39,8 @@ def register_routes(api):
     api.add_resource(RemoveInstructionAPI,
         '/v1/instructions/remove/<int:instr_id>',
     )
+
+    # Utils
     api.add_resource(DishImport, '/v1/dishes/import',)
 
     # api.add_resource(TodoSimple,

@@ -71,6 +71,36 @@ class DishAPI(Resource):
         ), 200
 
     @jwt_required
+    def post(self):
+        if not get_jwt_identity():
+            return ErrorSerializer().dump(
+                dict(
+                    code=CODE_UNAUTHORIZED,
+                    message=UNAUTHORIZED_ERROR,
+                    errors=['Invalid token. Please try again']
+                )
+            ), 401, DEFAULT_HEADER
+
+        req = request.get_json(force=True)
+        errors = DishNewSerializer().validate(req)
+
+        if errors:
+            return ErrorSerializer().dump(
+                dict(
+                    code=CODE_BAD_REQUEST,
+                    message=BAD_REQUEST,
+                    errors=errors
+                )
+            ), 400, DEFAULT_HEADER
+
+        dish = Dish(**req)
+        dish.save()
+
+        return SuccessSerializer().dump(
+            dict(message="OK", data=DishSchema().dump(dish))
+        ), 200
+
+    @jwt_required
     def put(self, dish_id):
         if not get_jwt_identity():
             return ErrorSerializer().dump(

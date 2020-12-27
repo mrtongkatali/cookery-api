@@ -19,6 +19,17 @@ class PaginationQSValidator(Schema):
     sort = fields.Str(required=False)
     q = fields.Str(required=False)
 
+class DishNewSerializer(Schema):
+    dish_name = fields.Str(required=True, validate=Length(max=100))
+    course = fields.Integer(required=True)
+    cuisine = fields.Integer(required=True)
+    prep_hour = fields.Integer(required=True)
+    prep_minute = fields.Integer(required=True)
+    cook_hour = fields.Integer(required=True)
+    cook_minute = fields.Integer(required=True)
+    serving_count = fields.Integer(required=True)
+    user_id = fields.Integer(required=True)
+
 class DishUpdateSerializer(Schema):
     dish_name = fields.Str(required=True, validate=Length(max=100))
     course = fields.Integer(required=True)

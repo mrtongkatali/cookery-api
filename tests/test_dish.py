@@ -22,6 +22,27 @@ class DishTest(BaseCase):
 
         return new_user
 
-    def test_add_dish(self):
+    def add_dish(self):
         user = self.register_user()
-        pass
+
+        payload = {
+        	"cook_minute": 10,
+        	"cuisine": 1,
+        	"prep_hour": 0,
+        	"prep_minute": 10,
+        	"cook_hour": 3,
+            "course": 1,
+            "dish_name": "Chicken Bulanglang",
+            "serving_count": 4,
+            "user_id": 1
+        }
+
+        dish = Dish(**payload)
+        dish.save()
+
+        return dish
+
+    def test_add_dish(self):
+        dish = self.add_dish()
+
+        self.assertEqual(1, dish.id)

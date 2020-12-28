@@ -69,12 +69,15 @@ class Dish(TimestampMixin, db.Model):
     @classmethod
     def find_by_id(self, dish_id):
         try:
+            # https://stackoverflow.com/questions/12675162/left-join-that-is-not-showing-all-left-table-values
+            # https://stackoverflow.com/questions/55257893/how-left-outer-join-in-sqlalchemy
+
             query = (
                 db.session.query(Dish)
                 .options(contains_eager(Dish.ingredients))
-                .join(Ingredients)
+                .outerjoin(Ingredients)
                 .options(contains_eager(Dish.instruction))
-                .join(PrepInstruction)
+                .outerjoin(PrepInstruction)
                 .filter(
                     and_(
                         Dish.id == dish_id,

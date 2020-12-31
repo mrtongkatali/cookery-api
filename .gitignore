@@ -4,5 +4,4 @@ backup/*
 *.pyo
 __pycache__/*
 cookery_uwsgi.ini
-cookeryapi.service
 readme.txt

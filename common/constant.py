@@ -1,0 +1,9 @@
+BAD_REQUEST = "400 Bad Request"
+INTERNAL_ERROR = "500 Internal Server Error"
+UNAUTHORIZED_ERROR = "401 Unauthorized Acces"
+
+CODE_UNAUTHORIZED="UNAUTHORIZED"
+CODE_INTERNAL_ERROR="INTERNAL_SERVER_ERROR"
+CODE_BAD_REQUEST="BAD_REQUEST"
+
+DEFAULT_HEADER = {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}

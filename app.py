@@ -1,40 +1,66 @@
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+import logging
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-db = SQLAlchemy(app)
+from flask import Flask
+from flask_restful import Api
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
 
-class Todo(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(20), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+from routes import register_routes
 
-    def __repr__(self):
-        return '<Task %r>' % self.id
+from db import db
+from extensions import *
+from datetime import datetime as dt
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+def setup_test():
+    app = Flask(__name__)
+    app.config['DEBUG'] = True
+    app.config['SECRET_KEY'] = "~C0MZ>4a68.+UR5!^c5H2pCs@sNBHN?_b~f]*Mgkg:3zc"
+    app.config['JWT_SECRET_KEY'] = "Qfvf{Dn(sAeDE2[8;01W2Wx}}Ji<@-"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "mysql://cookerytestuser:Abc123!xyz###@localhost:3306/cookery_test_db"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_ECHO'] = False
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    db.init_app(app)
 
-"""
-DESIGN DOC
+    return app
 
-General Overview
+def create_app(env):
+    import settings
 
-PHASE 1:
-- Create a web application for sharing homemade cooked meals.
-- As a user, I can create an account to the site, then make my own recipe.
-- As a user, I can publish my own recipe or make it private
-- As a user, my recipe can be peer reviewed and rated by other users
-- As a user, I can review or bookmark someone's public recipe
-- As a user, I can search a recipe using my available ingredients
+    app = Flask(__name__)
 
-PHASE 2:
-- As as user, I
+    if env == "production":
+        app.config.from_object('settings.ProductionConfig')
+    elif env == "staging":
+        app.config.from_object('settings.StagingConfig')
+    else:
+        app.config.from_object('settings.DevelopmentConfig')
 
-"""
+    api = Api(app)
+    bcrypt = Bcrypt(app)
+    jwt = JWTManager(app)
+
+    register_extensions(app)
+    register_routes(api)
+
+    # logger = logging.getLogger("app.access")
+    # logging.info('info on app.vue')
+
+    return app
+
+def register_extensions(app):
+    logs.init_app(app)
+    db.init_app(app)
+
+    return None
+
+def main():
+    create_app("dev")
+    app.run()
+
+if __name__ == '__main__':
+    # from db import db
+    # db.init_app(app)
+    # initialize_routes(api)
+    # app.run(port=5000, debug=True)
+    main()

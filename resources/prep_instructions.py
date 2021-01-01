@@ -13,7 +13,7 @@ class PrepInstructionAPI(Resource):
     @jwt_required
     def get(self, instr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         data = PrepInstruction.find_by_id(instr_id)
 
@@ -22,7 +22,7 @@ class PrepInstructionAPI(Resource):
     @jwt_required
     def post(self):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
         errors = InstructionNewSerializer().validate(req)
@@ -44,7 +44,7 @@ class PrepInstructionAPI(Resource):
     @jwt_required
     def put(self, instr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
         errors = InstructionUpdateSerializer().validate(req)
@@ -65,7 +65,7 @@ class RemoveInstructionAPI(Resource):
     @jwt_required
     def post(self, instr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         instruction = PrepInstruction.find_by_id(instr_id)
 

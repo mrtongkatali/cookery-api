@@ -11,7 +11,7 @@ class IngredientAPI(Resource):
     @jwt_required
     def get(self, ingr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         data = Ingredients.find_by_id(ingr_id)
 
@@ -20,7 +20,7 @@ class IngredientAPI(Resource):
     @jwt_required
     def post(self):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
         errors = IngredientNewSerializer().validate(req)
@@ -43,7 +43,7 @@ class IngredientAPI(Resource):
     @jwt_required
     def put(self, ingr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         req = request.get_json(force=True)
         errors = IngredientUpdateSerializer().validate(req)
@@ -68,7 +68,7 @@ class RemoveIngredientAPI(Resource):
     @jwt_required
     def post(self, ingr_id):
         if not get_jwt_identity():
-            return dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401, DEFAULT_HEADER
 
         ingredient = Ingredients.find_by_id(ingr_id)
 

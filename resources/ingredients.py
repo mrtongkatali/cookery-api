@@ -29,7 +29,11 @@ class IngredientAPI(Resource):
             return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400
 
         try:
+            ins = Ingredients.find_last_step(req['dish_id'])
+            step_order = 1 if ins is None else ins.step_order + 1
+
             ingredient = Ingredients(**req)
+            ingredient.step_order = step_order
             ingredient.grocery_item_id = 1 # Set as default 1 for now
             ingredient.main_dish = 1 # Set as default 1 for now
             ingredient.status = 1 # Active as default

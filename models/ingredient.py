@@ -27,5 +27,22 @@ class Ingredients(TimestampMixin, db.Model):
     def find_by_id(self, ingr_id):
         return self.query.get(ingr_id)
 
+    @classmethod
+    def find_last_step(self, dish_id):
+        try:
+            query = (
+                db.session.query()
+                .with_entities('step_order')
+                .filter(Ingredients.dish_id == dish_id)
+                .order_by(Ingredients.step_order.desc())
+                .first()
+            )
+
+            return query
+        except Exception as e:
+            logging.debug(f"[err] Ingredients.find_last_step({dish_id}) => {e}")
+            return None
+
+    @classmethod
     def find_all_active(self, ingr_id):
         return self.query.filter(id=ingr_id, status=1)

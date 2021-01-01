@@ -28,7 +28,7 @@ class PrepInstructionAPI(Resource):
         errors = InstructionNewSerializer().validate(req)
 
         if errors:
-            return dict(message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
 
         ins = PrepInstruction.find_last_step(req['dish_id'])
         step_order = 1 if ins is None else ins.step_order + 1
@@ -50,12 +50,12 @@ class PrepInstructionAPI(Resource):
         errors = InstructionUpdateSerializer().validate(req)
 
         if errors:
-            return dict(message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
 
         instruction = PrepInstruction.find_by_id(instr_id)
 
         if not instruction:
-            return dict(message=BAD_REQUEST, errors=['Instruction not found.']), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Instruction not found.']), 400, DEFAULT_HEADER
 
         instruction.update(req)
 
@@ -70,7 +70,7 @@ class RemoveInstructionAPI(Resource):
         instruction = PrepInstruction.find_by_id(instr_id)
 
         if not instruction:
-            return dict(message=BAD_REQUEST, errors=['Instruction not found.']), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Instruction not found.']), 400, DEFAULT_HEADER
 
         instruction.status = 0
         instruction.save()

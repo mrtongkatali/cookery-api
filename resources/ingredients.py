@@ -26,7 +26,7 @@ class IngredientAPI(Resource):
         errors = IngredientNewSerializer().validate(req)
 
         if errors:
-            return dict(message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
 
         try:
             ingredient = Ingredients(**req)
@@ -49,13 +49,13 @@ class IngredientAPI(Resource):
         errors = IngredientUpdateSerializer().validate(req)
 
         if errors:
-            return dict(message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400, DEFAULT_HEADER
 
         try:
             ingredient = Ingredients.find_by_id(ingr_id)
 
             if not ingredient:
-                return dict(message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
+                return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
 
             ingredient.update(req)
 
@@ -73,7 +73,7 @@ class RemoveIngredientAPI(Resource):
         ingredient = Ingredients.find_by_id(ingr_id)
 
         if not ingredient:
-            return dict(message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
 
         ingredient.status = 0
         ingredient.save()

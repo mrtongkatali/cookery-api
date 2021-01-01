@@ -15,7 +15,7 @@ class IngredientAPI(Resource):
 
         data = Ingredients.find_by_id(ingr_id)
 
-        return dict(message="OK", data=IngredientSchema().dump(data)), 200, DEFAULT_HEADER
+        return dict(message="OK", data=IngredientSchema().dump(data)), 200
 
     @jwt_required
     def post(self):

@@ -17,7 +17,7 @@ class PrepInstructionAPI(Resource):
 
         data = PrepInstruction.find_by_id(instr_id)
 
-        return dict(message="OK", data=PrepInstructionSchema().dump(data)), 200, DEFAULT_HEADER
+        return dict(message="OK", data=PrepInstructionSchema().dump(data)), 200
 
     @jwt_required
     def post(self):

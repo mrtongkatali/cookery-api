@@ -26,7 +26,7 @@ class DishesAPI(Resource):
             "total": dish.total
         }
 
-        return dict(message="OK", data=list), 200, DEFAULT_HEADER
+        return dict(message="OK", data=list), 200
 
 class DishAPI(Resource):
     @jwt_required
@@ -46,7 +46,7 @@ class DishAPI(Resource):
         #     filter(lambda i: i['status'] == 1, schema['ingredients'])
         # ))
 
-        return dict(message="OK", data=schema), 200, DEFAULT_HEADER
+        return dict(message="OK", data=schema), 200
 
     @jwt_required
     def post(self):

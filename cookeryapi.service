@@ -6,12 +6,11 @@ After=network.target
 User=leod
 Group=www-data
 
-User=ubuntu
+User=leod
 Group=www-data
-
-WorkingDirectory=/var/www/cookeryapi
-Environment="PATH=/home/ubuntu/.local/share/virtualenvs/cookeryapi-kQ7dk9wr/bin"
-ExecStart=/home/ubuntu/.local/share/virtualenvs/cookeryapi-kQ7dk9wr/bin/gunicorn --workers 1 --bind unix:/tmp/myproject.sock -m 007 --access-logfile /var/log/crazyapp/cookery/gunicorn-access.log --error-logfile /var/log/crazyapp/cookery/gunicorn-error.log --timeout=10 --reload "app:create_app('development')"
+WorkingDirectory=/media/leod/WORKSPACE/crazyapp/cookeryapi
+Environment="PATH=/home/leod/.local/share/virtualenvs/cookeryapi-Px9HRAp5/bin"
+ExecStart=/home/leod/.local/share/virtualenvs/cookeryapi-Px9HRAp5/bin/gunicorn --workers 1 --bind unix:/tmp/myproject.sock -m 007 --access-logfile /var/log/crazyapp/cookery/gunicorn-access.log --error-logfile /var/log/crazyapp/cookery/gunicorn-error.log --timeout=10 --reload "app:create_app('development')"
 
 [Install]
 WantedBy=multi-user.target

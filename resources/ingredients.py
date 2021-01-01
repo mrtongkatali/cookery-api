@@ -15,9 +15,7 @@ class IngredientAPI(Resource):
 
         data = Ingredients.find_by_id(ingr_id)
 
-        return SuccessSerializer().dump(
-            dict(message="OK", data=IngredientSchema().dump(data))
-        ), 200
+        return dict(message="OK", data=IngredientSchema().dump(data)), 200, DEFAULT_HEADER
 
     @jwt_required
     def post(self):
@@ -37,9 +35,7 @@ class IngredientAPI(Resource):
             ingredient.status = 1 # Active as default
             ingredient.save()
 
-            return SuccessSerializer().dump(
-                dict(message="OK", data=IngredientSchema().dump(ingredient))
-            ), 200
+            return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200, DEFAULT_HEADER
         except Exception as e:
             # log the error here
             return dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.']), 400, DEFAULT_HEADER
@@ -57,14 +53,13 @@ class IngredientAPI(Resource):
 
         try:
             ingredient = Ingredients.find_by_id(ingr_id)
-            return dict(message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
+
+            if not ingredient:
+                return dict(message=BAD_REQUEST, errors=['Ingredient not found.']), 400, DEFAULT_HEADER
 
             ingredient.update(req)
 
-            return SuccessSerializer().dump(
-                dict(message="OK", data=IngredientSchema().dump(ingredient))
-            ), 200
-
+            return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200, DEFAULT_HEADER
         except Exception as e:
             # log the error here
             return dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.']), 400, DEFAULT_HEADER

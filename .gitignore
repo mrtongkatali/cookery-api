@@ -3,5 +3,7 @@ backup/*
 *.pyc
 *.pyo
 __pycache__/*
+cookery_nginx.conf
+cookeryapi.service
 cookery_uwsgi.ini
 readme.txt

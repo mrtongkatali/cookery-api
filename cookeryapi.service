@@ -6,8 +6,9 @@ After=network.target
 User=leod
 Group=www-data
 
-User=leod
+User=ubuntu
 Group=www-data
+
 WorkingDirectory=/var/www/cookeryapi
 Environment="PATH=/home/ubuntu/.local/share/virtualenvs/cookeryapi-kQ7dk9wr/bin"
 ExecStart=/home/ubuntu/.local/share/virtualenvs/cookeryapi-kQ7dk9wr/bin/gunicorn --workers 1 --bind unix:/tmp/myproject.sock -m 007 --access-logfile /var/log/crazyapp/cookery/gunicorn-access.log --error-logfile /var/log/crazyapp/cookery/gunicorn-error.log --timeout=10 --reload "app:create_app('development')"

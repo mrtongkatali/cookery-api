@@ -25,7 +25,7 @@ def setup_test():
     return app
 
 def create_app(env):
-    import settings
+    import settings # Import settings here due to conflict on test.py
 
     app = Flask(__name__)
 

@@ -63,6 +63,10 @@ class IngredientAPI(Resource):
 
             ingredient.update(req)
 
+            # Sync to es
+            from utils.es import Elastic
+            es = Elastic('cookery-dish')
+
             return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200
         except Exception as e:
             # log the error here

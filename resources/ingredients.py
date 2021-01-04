@@ -1,3 +1,5 @@
+import logging
+
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -62,10 +64,6 @@ class IngredientAPI(Resource):
                 return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Ingredient not found.']), 400
 
             ingredient.update(req)
-
-            # Sync to es
-            from utils.es import Elastic
-            es = Elastic('cookery-dish')
 
             return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200
         except Exception as e:

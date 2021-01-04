@@ -1,3 +1,4 @@
+import logging
 from db import db
 from models.mixins import TimestampMixin
 

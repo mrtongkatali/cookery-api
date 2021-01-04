@@ -1,3 +1,5 @@
+import logging
+
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -61,6 +63,33 @@ class DishAPI(Resource):
 
         dish = Dish(**req)
         dish.save()
+
+        # add to elastic
+        from utils.es import Elastic
+        es = Elastic("cookery-dish")
+
+        body = {
+            "dish_id": dish.id,
+            "user_id": dish.user_id,
+            "main_dish": dish.main_dish,
+            "dish_name": dish.dish_name,
+            "course_id": dish.course,
+            "course": "",
+            "cuisine": dish.cuisine,
+            "serving_pax": dish.serving_count,
+            "prep_hour": dish.prep_hour,
+            "prep_minute": dish.prep_minute,
+            "cook_hour": dish.cook_hour,
+            "cook_minute": dish.cook_minute,
+            "dish_kw": "",
+            "nutrition": [],
+            "ingredients": [],
+            "instruction": [],
+            "status": 1
+        }
+
+        logging.debug(f"[err] ################# HEYYYYY!!! => {body}")
+        es.create(id=dish.id, body=dish)
 
         return dict(message="OK", data=DishSchema().dump(dish)), 200
 

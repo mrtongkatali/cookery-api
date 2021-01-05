@@ -9,6 +9,10 @@ from common.constant import *
 from common.serializer import *
 from common.schema import DishSchema
 
+from utils.es import Elastic
+
+es = Elastic("cookery-dish")
+
 class DishesAPI(Resource):
     @jwt_required
     def get(self):
@@ -64,32 +68,9 @@ class DishAPI(Resource):
         dish = Dish(**req)
         dish.save()
 
-        # add to elastic
-        # from utils.es import Elastic
-        # es = Elastic("cookery-dish")
-        #
-        # body = {
-        #     "dish_id": dish.id,
-        #     "user_id": dish.user_id,
-        #     "main_dish": dish.main_dish,
-        #     "dish_name": dish.dish_name,
-        #     "course_id": dish.course,
-        #     "course": "",
-        #     "cuisine": dish.cuisine,
-        #     "serving_pax": dish.serving_count,
-        #     "prep_hour": dish.prep_hour,
-        #     "prep_minute": dish.prep_minute,
-        #     "cook_hour": dish.cook_hour,
-        #     "cook_minute": dish.cook_minute,
-        #     "dish_kw": "",
-        #     "nutrition": [],
-        #     "ingredients": [],
-        #     "instruction": [],
-        #     "status": 1
-        # }
-        #
-        # logging.debug(f"[err] ################# HEYYYYY!!! => {body}")
-        # es.create(id=dish.id, body=dish)
+        # index document
+        obj = Dish.find_by_id(dish.id)
+        es.create(id=obj.id, body=DishSchema().dump(obj))
 
         return dict(message="OK", data=DishSchema().dump(dish)), 200
 
@@ -110,6 +91,7 @@ class DishAPI(Resource):
             return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=['Dish not found.']), 400
 
         dish.update(req)
+        es.index_document(id=dish.id, body=DishSchema().dump(dish))
 
         return dict(message="OK", data=DishSchema().dump(dish)), 200
 
@@ -126,5 +108,8 @@ class RemoveDishAPI(Resource):
 
         dish.status = 0
         dish.save()
+
+        # index dish
+        es.index_document(id=dish.id, body=DishSchema().dump(dish))
 
         return dict(message="Successfully deleted."), 200

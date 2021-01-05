@@ -1,24 +1,69 @@
-from elasticsearch import Elasticsearch
+import logging
+from elasticsearch import Elasticsearch, RequestError
 
 class Elastic():
     def __init__(self, index, doc=None):
+        logging.debug(f"[err] ################# HEYYYYY DEBUG!!! => {index}")
         self.index = index
         self.doc = doc
 
-        self.es = Elasticsearch([
-            {"host": "localhost", "port": "9200"},
-        ])
+        try:
+            self.es = Elasticsearch([
+                {"host": "localhost", "port": "9200"}
+            ])
+
+            self.init_dish_index()
+        except RequestError as error:
+            logging.debug(f"[err] ################# HEYYYYY Elastic!!! => {error}")
+
+    def init_dish_index(self):
+        try:
+            self.es.indices.create(index=self.index, ignore=400)
+
+            mapping = {
+                "settings": {
+                  "number_of_shards": 3,
+                  "number_of_replicas": 2
+                },
+                "mappings": {
+                  "properties": {
+                    "dish_id": { "type": "integer" },
+                    "user_id": { "type": "integer" },
+                    "main_dish": { "type": "integer" },
+                    "dish_name": { "type": "text" },
+                    "course_id": { "type": "integer" },
+                    "course": { "type": "keyword" },
+                    "cuisine": { "type": "keyword" },
+                    "serving_pax": { "type": "integer" },
+                    "prep_hour": { "type": "integer" },
+                    "prep_minute": { "type": "integer" },
+                    "cook_hour": { "type": "integer" },
+                    "cook_minute": { "type": "integer" },
+                    "dish_kw": { "type": "text" },
+                    "nutrition": { "type": "nested" },
+                    "ingredients": { "type": "nested" },
+                    "instruction": { "type": "nested" },
+                    "status": { "type": "integer" }
+                  }
+                }
+            }
+
+            es.indices.put_mapping(index=self.index,body=mapping)
+        except RequestError as error:
+            logging.debug(f"[err] ################# HEYYYYY REQUEST!!! => {error}")
+            sys.exit(1)
 
     def create(self, **kwargs):
-        self.es.indices.create(index=self.index, ignore=[400])
-        self.es.create(
-            self.index,
-            kwargs.get('id'),
-            kwargs.get('body'),
-            doc_type=self.doc,
-            params=None,
-            headers=None
-        )
+        pass
+        # self.es.indices.create(index=self.index, ignore=[400])
+        # self.es.create(
+        #     self.index,
+        #     kwargs.get('id'),
+        #     kwargs.get('body'),
+        #     doc_type=self.doc,
+        #     params=None,
+        #     headers=None
+        # )
 
 # body = {
 #     "dish_id": 1,

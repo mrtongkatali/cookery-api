@@ -24,6 +24,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
+    ELASTICSEARCH_URL = env.str('ELASTICSEARCH_URL')
 
 class StagingConfig(Config):
     env.read_env(".env.dev", recurse=False)
@@ -35,6 +36,7 @@ class StagingConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
+    ELASTICSEARCH_URL = env.str('ELASTICSEARCH_URL')
 
 class ProductionConfig(Config):
     env.read_env(".env.dev", recurse=False)
@@ -46,6 +48,7 @@ class ProductionConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
+    ELASTICSEARCH_URL = env.str('ELASTICSEARCH_URL')
 
 class TestConfig(Config):
     env.read_env(".env.testing", recurse=False)
@@ -57,3 +60,4 @@ class TestConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
     SQLALCHEMY_ECHO = True
+    ELASTICSEARCH_URL = env.str('ELASTICSEARCH_URL')

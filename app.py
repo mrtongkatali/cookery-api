@@ -11,6 +11,8 @@ from db import db
 from extensions import *
 from datetime import datetime as dt
 
+from elasticsearch import Elasticsearch, RequestError
+
 def setup_test():
     app = Flask(__name__)
     app.config['DEBUG'] = True
@@ -35,6 +37,10 @@ def create_app(env):
         app.config.from_object('settings.StagingConfig')
     else:
         app.config.from_object('settings.DevelopmentConfig')
+
+    app.elasticsearch = Elasticsearch([
+        {"host": "localhost", "port": "9200"}
+    ])
 
     api = Api(app)
     bcrypt = Bcrypt(app)

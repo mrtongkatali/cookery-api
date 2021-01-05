@@ -5,9 +5,14 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models.ingredient import Ingredients
+
 from common.constant import *
 from common.serializer import *
-from common.schema import IngredientSchema
+from common.schema import IngredientSchema, DishSchema
+
+from utils.es import Elastic
+
+es = Elastic("cookery-dish")
 
 class IngredientAPI(Resource):
     @jwt_required
@@ -41,9 +46,12 @@ class IngredientAPI(Resource):
             ingredient.status = 1 # Active as default
             ingredient.save()
 
+            # index document
+            es.index_document(id=req['dish_id'], body=DishSchema().dump(ingredient.dish))
+
             return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200
         except Exception as e:
-            # log the error here
+            logging.debug(f"[err] update ingredient - {e} => {req}")
             return dict(message=INTERNAL_ERROR, errors=['An error occured. Please try again later.']), 400
 
     @jwt_required
@@ -65,6 +73,9 @@ class IngredientAPI(Resource):
 
             ingredient.update(req)
 
+            # index document
+            es.index_document(id=ingredient.dish.id, body=DishSchema().dump(ingredient.dish))
+
             return dict(message="OK", data=IngredientSchema().dump(ingredient)), 200
         except Exception as e:
             # log the error here
@@ -83,5 +94,8 @@ class RemoveIngredientAPI(Resource):
 
         ingredient.status = 0
         ingredient.save()
+
+        # index document
+        es.index_document(id=ingredient.dish.id, body=DishSchema().dump(ingredient.dish))
 
         return dict(message="Successfully deleted."), 200

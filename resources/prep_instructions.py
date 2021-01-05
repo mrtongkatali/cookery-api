@@ -4,10 +4,15 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from models.dish import Dish
 from models.prep_instruction import PrepInstruction
 from common.constant import *
 from common.serializer import *
-from common.schema import PrepInstructionSchema
+from common.schema import PrepInstructionSchema, DishSchema
+
+from utils.es import Elastic
+
+es = Elastic("cookery-dish")
 
 class PrepInstructionAPI(Resource):
     @jwt_required
@@ -39,6 +44,9 @@ class PrepInstructionAPI(Resource):
         ins.status = 1
         ins.save()
 
+        # index document
+        es.index_document(id=req['dish_id'], body=DishSchema().dump(ins.dish))
+
         return dict(message="OK", data=PrepInstructionSchema().dump(ins)), 200
 
     @jwt_required
@@ -59,6 +67,9 @@ class PrepInstructionAPI(Resource):
 
         instruction.update(req)
 
+        # index document
+        es.index_document(id=instruction.dish.id, body=DishSchema().dump(instruction.dish))
+
         return dict(message="OK", data=PrepInstructionSchema().dump(instruction)), 200
 
 class RemoveInstructionAPI(Resource):
@@ -74,5 +85,8 @@ class RemoveInstructionAPI(Resource):
 
         instruction.status = 0
         instruction.save()
+
+        # index document
+        es.index_document(id=instruction.dish.id, body=DishSchema().dump(instruction.dish))
 
         return dict(message="Successfully deleted."), 200

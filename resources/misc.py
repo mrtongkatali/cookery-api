@@ -34,8 +34,8 @@ class ReIndexAPI(Resource):
         t1 = time.time()
         elapse = t1 - t0
 
-        dishes = Dish.get_dish_import(page=page, size=size)
-        es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
+        # dishes = Dish.get_dish_import(page=page, size=size)
+        # es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
 
         list = {
             "totalDataIndexed": count,

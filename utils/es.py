@@ -3,6 +3,7 @@ from elasticsearch import Elasticsearch, RequestError, helpers
 
 def gendata(dishes):
     for dish in dishes:
+        logging.debug(f"[info] bulk_indexing => {dish[id]}")
         yield {
             "_index": 'cookery-dish',
             "_id": dish['id'],
@@ -56,10 +57,10 @@ class Elastic():
             # ]
             # helpers.bulk(self.es, actions)
             helpers.bulk(self.es, gendata(kwargs.get('body')))
-            # logging.debug(f"[info] bulk_index => {actions}")
+
             return
         except Exception as e:
-            logging.debug(f"[err] bulk_index :: {kwargs.get('body')} => {e}")
+            logging.debug(f"[err] bulk_index :: {e}")
 
 # Sync to es
 # body = {'instruction': [], 'prep_minute': 10, 'ingredients': [], 'id': 1593, 'serving_count': 4, 'updated_at': '2021-01-05T14:03:30', 'description': None, 'course': 1, 'cuisine': 1, 'main_dish': 11, 'prep_hour': 0, 'cook_hour': 3, 'dish_name': 'Bulalo Kare-Kare na may halong Dulang sa Garapon', 'status': 1, 'created_at': '2021-01-05T14:02:47', 'cook_minute': 10}

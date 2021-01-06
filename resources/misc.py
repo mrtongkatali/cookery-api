@@ -17,18 +17,19 @@ class ReIndexAPI(Resource):
         t0 = time.time()
 
         page = 1
-        size = 10
+        size = 100
         count = 0
         hasData = True
 
-        # while hasData:
-        #     dishes = Dish.get_dish_import(page = page, size = size)
-        #
-        #     if len(dishes.items) == 0:
-        #         hasData = False
-        #     else:
-        #         count += len(dishes.items)
-        #         page += 1
+        while hasData:
+            dishes = Dish.get_dish_import(page=page, size=size)
+
+            if len(dishes.items) == 0:
+                hasData = False
+            else:
+                es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
+                count += len(dishes.items)
+                page += 1
 
         t1 = time.time()
         elapse = t1 - t0

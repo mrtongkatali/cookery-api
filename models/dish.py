@@ -46,6 +46,18 @@ class Dish(TimestampMixin, db.Model):
         db.session.commit()
 
     @classmethod
+    def get_dish_import(self, **kwargs):
+        try:
+            query = (
+                db.session.query(Dish)
+                .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
+            )
+
+            return query
+        except Exception as e:
+            logging.debug(f"[err] Dish.get_dish_import :: {kwargs} => {e}")
+
+    @classmethod
     def get_all_dishes(self, **kwargs):
         sort = kwargs["sort"] if "sort" in kwargs else "dish.id desc"
         # sort = "id asc"

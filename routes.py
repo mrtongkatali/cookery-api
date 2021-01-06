@@ -3,6 +3,7 @@ from resources.dishes import *
 from resources.ingredients import *
 from resources.prep_instructions import *
 from resources.data_import import *
+from resources.misc import *
 
 def register_routes(api):
     # Test URL

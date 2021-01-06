@@ -10,28 +10,31 @@ from common.schema import DishSchema
 from common.serializer import *
 
 from utils.es import Elastic
+es = Elastic("cookery-dish")
 
 class ReIndexAPI(Resource):
     def post(self):
         t0 = time.time()
 
         page = 1
-        size = 100
+        size = 10
         count = 0
         hasData = True
 
-        while hasData:
-            dish = Dish.get_dish_import(page = page, size = size)
+        # while hasData:
+        #     dishes = Dish.get_dish_import(page = page, size = size)
+        #
+        #     if len(dishes.items) == 0:
+        #         hasData = False
+        #     else:
+        #         count += len(dishes.items)
+        #         page += 1
 
-            if len(dish.items) == 0:
-                hasData = False
-            else:
-                count += len(dish.items)
-                page += 1
-
-        # dish = Dish.get_dish_import(page = page, size = size)
         t1 = time.time()
         elapse = t1 - t0
+
+        dishes = Dish.get_dish_import(page=page, size=size)
+        es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
 
         list = {
             "totalDataIndexed": count,

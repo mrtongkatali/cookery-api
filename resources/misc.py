@@ -17,7 +17,7 @@ class ReIndexAPI(Resource):
         t0 = time.time()
 
         page = 1
-        size = 100
+        size = 1000
         count = 0
         hasData = True
 
@@ -27,15 +27,12 @@ class ReIndexAPI(Resource):
             if len(dishes.items) == 0:
                 hasData = False
             else:
-                es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
+                es.bulk_index(body=dishes.items)
                 count += len(dishes.items)
                 page += 1
 
         t1 = time.time()
         elapse = t1 - t0
-
-        # dishes = Dish.get_dish_import(page=page, size=size)
-        # es.bulk_index(body=DishSchema(many=True).dump(dishes.items))
 
         list = {
             "totalDataIndexed": count,

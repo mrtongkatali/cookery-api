@@ -1,14 +1,7 @@
 import logging
 from elasticsearch import Elasticsearch, RequestError, helpers
 
-def gendata(dishes):
-    for dish in dishes:
-        logging.debug(f"[info] bulk_indexing => {dish[id]}")
-        yield {
-            "_index": 'cookery-dish',
-            "_id": dish['id'],
-            "_source": dish
-        }
+from common.schema import DishSchema
 
 class Elastic():
     def __init__(self, index, doc=None):
@@ -45,18 +38,16 @@ class Elastic():
 
     def bulk_index(self, **kwargs):
         try:
-            # actions = [
-            #     {
-            #         "_index": self.index,
-            #         "_id": dish['id'],
-            #         "_source": {
-            #             "body": dish
-            #         }
-            #     }
-            #     for dish in kwargs.get('body')
-            # ]
-            # helpers.bulk(self.es, actions)
-            helpers.bulk(self.es, gendata(kwargs.get('body')))
+            def generate_data():
+                for dish in kwargs.get('body'):
+                    logging.debug(f"[info] bulk_indexing => {dish.id}")
+                    yield {
+                        "_index": 'cookery-dish',
+                        "_id": dish.id,
+                        "_source": DishSchema().dump(dish)
+                    }
+
+            helpers.bulk(self.es, generate_data())
 
             return
         except Exception as e:

@@ -12,11 +12,17 @@ class Elastic():
             {"host": "localhost", "port": "9200"}
         ])
 
-    def search(self, **kwargs):
-        logging.debug(f"[info] searching indexed data => {self.index})
-        res = es.search(index=self.index, body={"query": {"match_all": {}}})
+    def search_data(self, **kwargs):
+        try:
+            logging.debug(f"[info] searching indexed data => {kwargs}")
+            res = self.es.search(index=self.index, body=kwargs.get('body'))
 
-        return res
+            return res
+        except Exception as e:
+            logging.debug(f"[err] searching indexed data => {kwargs}, {e}")
+        # logging.debug(f"[info] searching indexed data => {kwargs.get('body')}")
+        # res = self.es.search(index=self.index, body=kwargs.get('body'))
+        # return res
 
     def create(self, **kwargs):
         logging.debug(f"[info] Indexed a document => {self.index}, {self.doc}, {kwargs.get('id')}, {kwargs.get('body')}")

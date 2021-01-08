@@ -15,11 +15,49 @@ es = Elastic("cookery-dish")
 
 class DishesElasticAPI(Resource):
     @jwt_required
-    def get(self):
+    def post(self):
         if not get_jwt_identity():
             return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
 
-        return "The one that got away"
+        req = request.get_json(force=True)
+        errors = PaginationQSValidator().validate(req)
+        if errors:
+            return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400
+
+        query = "*" if req['q'] is None else req['q']
+
+        body = {
+          "from": req['page'],
+          "size": req['size'],
+          "sort": [
+            {"id": {"order": "desc"}}
+          ],
+          "query": {}
+        }
+
+        if req['q'] is None:
+            body['query']['match_all'] = {}
+        else:
+            body['query']['match'] = {
+              "dish_name": req['q']
+            }
+
+        data = []
+        dishes = es.search_data(body=body)
+
+        if len(dishes['hits']['hits']) > 0:
+            for source in dishes['hits']['hits']:
+                dish = source['_source']
+                data.append(dish)
+                logging.info(f"asdasdas -- {dish}")
+
+        list = {
+            "list": dishes,
+            "count": len(dishes['hits']['hits']),
+            "total": dishes['hits']['total']['value']
+        }
+
+        return dict(message="OK", data=list), 200
 
 class DishesAPI(Resource):
     @jwt_required

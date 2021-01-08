@@ -27,19 +27,30 @@ class DishesElasticAPI(Resource):
         query = "*" if req['q'] is None else req['q']
 
         body = {
-          "from": req['page'],
-          "size": req['size'],
-          "sort": [
-            {"id": {"order": "desc"}}
-          ],
-          "query": {}
+            "from": req['page'],
+            "size": req['size'],
+            "sort": [
+                {"id": {"order": "desc"}}
+            ],
+            "query": {
+                # "nested": {
+                #     "path": "ingredients",
+                #     "query": {
+                #         "bool": {
+                #             "must": [
+                #                 { "match": { "ingredients.id": "15131" } }
+                #             ]
+                #         }
+                #     }
+                # }
+            }
         }
-
         if req['q'] is None:
             body['query']['match_all'] = {}
         else:
-            body['query']['match'] = {
-              "dish_name": req['q']
+            body['query']['query_string'] = {
+                "query": query,
+                "default_field": "dish_name"
             }
 
         data = []

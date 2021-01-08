@@ -13,6 +13,14 @@ from utils.es import Elastic
 
 es = Elastic("cookery-dish")
 
+class DishesElasticAPI(Resource):
+    @jwt_required
+    def get(self):
+        if not get_jwt_identity():
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+
+        return "The one that got away"
+
 class DishesAPI(Resource):
     @jwt_required
     def get(self):

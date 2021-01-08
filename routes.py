@@ -14,6 +14,7 @@ def register_routes(api):
     api.add_resource(UserAuthAPI, '/v1/user/auth',)
 
     # Dish
+    api.add_resource(DishesElasticAPI, '/v1/dish/search')
     api.add_resource(DishesAPI,'/v1/dish/list',)
     api.add_resource(DishAPI,
         '/v1/dish/new',

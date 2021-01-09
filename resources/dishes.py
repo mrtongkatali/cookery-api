@@ -32,25 +32,33 @@ class DishesElasticAPI(Resource):
             "sort": [
                 {"id": {"order": "desc"}}
             ],
-            "query": {
-                # "nested": {
-                #     "path": "ingredients",
-                #     "query": {
-                #         "bool": {
-                #             "must": [
-                #                 { "match": { "ingredients.id": "15131" } }
-                #             ]
-                #         }
-                #     }
-                # }
-            }
+            "query": {}
         }
         if req['q'] is None:
             body['query']['match_all'] = {}
         else:
-            body['query']['query_string'] = {
-                "query": query,
-                "default_field": "dish_name"
+            # body['query']['query_string'] = {
+            #     "query": query,
+            # }
+            q = "ingredients.ingredient_name:flour AND ingredients.status:1"
+            # body['query']['nested'] = {
+            #     "path": "ingredients",
+            #     "query": {
+            #         "query_string": {
+            #             "query": q
+            #         }
+            #     }
+            # }
+            body['query']['nested'] = {
+                "path": "ingredients",
+                "query": {
+                    "bool": {
+                        "must": [
+                            { "match": { "ingredients.ingredient_name": "flour" }},
+                            { "term": { "ingredients.status": 1 }},
+                        ]
+                    }
+                }
             }
 
         data = []
@@ -63,7 +71,7 @@ class DishesElasticAPI(Resource):
                 logging.info(f"asdasdas -- {dish}")
 
         list = {
-            "list": dishes,
+            "list": data,
             "count": len(dishes['hits']['hits']),
             "total": dishes['hits']['total']['value']
         }

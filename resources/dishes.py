@@ -40,18 +40,22 @@ class DishesElasticAPI(Resource):
             # body['query']['query_string'] = {
             #     "query": query,
             # }
-            q = "ingredients.ingredient_name:flour"
-            body['query']['nested'] = {
-                "path": "ingredients",
-                "query": {
-                    # "query_string": {
-                    #     "query": q
-                    # }
-                    "terms": {
-                        ""
-                    }
-                }
-            }
+            must = []
+            for v in req['ingredient_names'].split(","):
+                must.append({ "match": { "es_keywords": v }})
+
+            body["query"] = { "bool": { "must": must } }
+            # body['query']['nested'] = {
+            #     "path": "ingredients",
+            #     "query": {
+            #         # "query_string": {
+            #         #     "query": q
+            #         # }
+            #         "terms": {
+            #             ""
+            #         }
+            #     }
+            # }
             # body['query']['nested'] = {
             #     "path": "ingredients",
             #     "query": {

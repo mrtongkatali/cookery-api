@@ -55,7 +55,7 @@ def register_extensions(app):
     return None
 
 def main():
-    create_app("dev")
+    app = create_app("dev")
     app.run()
 
 if __name__ == '__main__':

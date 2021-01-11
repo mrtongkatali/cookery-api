@@ -45,5 +45,19 @@ class Ingredients(TimestampMixin, db.Model):
             return None
 
     @classmethod
+    def find_all_by_dish_id(self, dishid):
+        try:
+            query = (
+                db.session.query(Ingredients)
+                .filter(Ingredients.dish_id == dishid)
+                .filter(Ingredients.status == 1)
+                .all()
+            )
+            return query
+        except Exception as e:
+            logging.debug(f"[err] Ingredients.find_all_by_dish_id({dishid}) => {e}")
+            return None
+
+    @classmethod
     def find_all_active(self, ingr_id):
         return self.query.filter(id=ingr_id, status=1)

@@ -4,6 +4,7 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from models.dish import Dish
 from models.ingredient import Ingredients
 
 from common.constant import *
@@ -46,6 +47,10 @@ class IngredientAPI(Resource):
             ingredient.status = 1 # Active as default
             ingredient.save()
 
+            # trigger update es_keywords field on dish
+            dish = Dish.find_by_id(req['dish_id'])
+            dish.update_es_keywords()
+
             # index document
             es.index_document(id=req['dish_id'], body=DishSchema().dump(ingredient.dish))
 
@@ -73,6 +78,10 @@ class IngredientAPI(Resource):
 
             ingredient.update(req)
 
+            # trigger update es_keywords field on dish
+            dish = Dish.find_by_id(ingredient.dish.id)
+            dish.update_es_keywords()
+
             # index document
             es.index_document(id=ingredient.dish.id, body=DishSchema().dump(ingredient.dish))
 
@@ -94,6 +103,10 @@ class RemoveIngredientAPI(Resource):
 
         ingredient.status = 0
         ingredient.save()
+
+        # trigger update es_keywords field on dish
+        dish = Dish.find_by_id(ingredient.dish.id)
+        dish.update_es_keywords()
 
         # index document
         es.index_document(id=ingredient.dish.id, body=DishSchema().dump(ingredient.dish))

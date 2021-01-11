@@ -12,6 +12,22 @@ from common.serializer import *
 from utils.es import Elastic
 es = Elastic("cookery-dish")
 
+class SyncESKewordsAPI(Resource):
+    def post(self):
+        # trigger update for es_keywords field on dish
+        try:
+            page = 6
+            size = 300
+            dishes = Dish.get_dish_import(page=page, size=size)
+
+            for d in dishes.items:
+                d.update_es_keywords()
+
+            return dict(message="Successful"), 200
+
+        except Exception as e:
+            logging.debug(f"[err] Sync es keywords => {e}")
+
 class ReIndexAPI(Resource):
     def post(self):
         t0 = time.time()

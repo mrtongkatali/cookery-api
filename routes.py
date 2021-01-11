@@ -48,6 +48,7 @@ def register_routes(api):
     # Utils
     api.add_resource(DishImport, '/v1/dishes/import',)
     api.add_resource(ReIndexAPI, '/v1/es/_reindex',)
+    api.add_resource(SyncESKewordsAPI, '/v1/es/_update_keywords',)
 
     # api.add_resource(TodoSimple,
     # #     '/todo/<string:todo_id>',

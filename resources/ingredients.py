@@ -47,7 +47,7 @@ class IngredientAPI(Resource):
             ingredient.status = 1 # Active as default
             ingredient.save()
 
-            # trigger update es_keywords field on dish
+            # trigger update for es_keywords field on dish
             dish = Dish.find_by_id(req['dish_id'])
             dish.update_es_keywords()
 
@@ -78,7 +78,7 @@ class IngredientAPI(Resource):
 
             ingredient.update(req)
 
-            # trigger update es_keywords field on dish
+            # trigger update for es_keywords field on dish
             dish = Dish.find_by_id(ingredient.dish.id)
             dish.update_es_keywords()
 
@@ -104,7 +104,7 @@ class RemoveIngredientAPI(Resource):
         ingredient.status = 0
         ingredient.save()
 
-        # trigger update es_keywords field on dish
+        # trigger update for es_keywords field on dish
         dish = Dish.find_by_id(ingredient.dish.id)
         dish.update_es_keywords()
 

@@ -24,6 +24,7 @@ class Dish(TimestampMixin, db.Model):
     cook_hour = db.Column(db.Integer, default="0")
     cook_minute = db.Column(db.Integer, default="0")
     serving_count = db.Column(db.Integer, default="1")
+    es_keywords = db.Column(db.Text, nullable=True)
     status = db.Column(db.Integer, default="1")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

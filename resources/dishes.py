@@ -20,11 +20,11 @@ class DishesElasticAPI(Resource):
             return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
 
         req = request.get_json(force=True)
-        errors = PaginationQSValidator().validate(req)
+        errors = EsQuerySerializer().validate(req)
         if errors:
             return dict(code=CODE_BAD_REQUEST, message=BAD_REQUEST, errors=errors), 400
 
-        query = "*" if req['q'] is None else req['q']
+        query = "*" if req['ingredient_names'] is None else req['ingredient_names']
 
         body = {
             "from": req['page'],
@@ -34,32 +34,35 @@ class DishesElasticAPI(Resource):
             ],
             "query": {}
         }
-        if req['q'] is None:
+        if req['ingredient_names'] is None:
             body['query']['match_all'] = {}
         else:
             # body['query']['query_string'] = {
             #     "query": query,
             # }
-            q = "ingredients.ingredient_name:flour AND ingredients.status:1"
-            # body['query']['nested'] = {
-            #     "path": "ingredients",
-            #     "query": {
-            #         "query_string": {
-            #             "query": q
-            #         }
-            #     }
-            # }
+            q = "ingredients.ingredient_name:flour"
             body['query']['nested'] = {
                 "path": "ingredients",
                 "query": {
-                    "bool": {
-                        "must": [
-                            { "match": { "ingredients.ingredient_name": "flour" }},
-                            { "term": { "ingredients.status": 1 }},
-                        ]
+                    # "query_string": {
+                    #     "query": q
+                    # }
+                    "terms": {
+                        ""
                     }
                 }
             }
+            # body['query']['nested'] = {
+            #     "path": "ingredients",
+            #     "query": {
+            #         "bool": {
+            #             "must": [
+            #                 { "match": { "ingredients.ingredient_name": "flour" }},
+            #                 { "match": { "ingredients.ingredient_name": "sugar" }}
+            #             ]
+            #         }
+            #     }
+            # }
 
         data = []
         dishes = es.search_data(body=body)

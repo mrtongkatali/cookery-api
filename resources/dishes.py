@@ -77,7 +77,7 @@ class DishesElasticAPI(Resource):
                 data.append(dish)
 
         list = {
-            "list": dishes,
+            "list": data,
             "count": len(dishes['hits']['hits']),
             "total": dishes['hits']['total']['value']
         }

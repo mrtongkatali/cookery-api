@@ -4,6 +4,7 @@ from db import db
 from models.mixins import TimestampMixin
 from models.ingredient import Ingredients
 from models.prep_instruction import PrepInstruction
+
 from models.user import User
 
 from sqlalchemy.sql import text
@@ -24,6 +25,7 @@ class Dish(TimestampMixin, db.Model):
     cook_hour = db.Column(db.Integer, default="0")
     cook_minute = db.Column(db.Integer, default="0")
     serving_count = db.Column(db.Integer, default="1")
+    es_keywords = db.Column(db.Text, nullable=True)
     status = db.Column(db.Integer, default="1")
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -44,6 +46,35 @@ class Dish(TimestampMixin, db.Model):
           setattr(self, key, item)
 
         db.session.commit()
+
+    def update_es_keywords(self):
+        try:
+            es_keywords = ""
+
+            ingredients = Ingredients.find_all_by_dish_id(self.id)
+            for ingredient in ingredients:
+                es_keywords += f"{ingredient.ingredient_name},"
+
+            self.es_keywords = es_keywords
+
+            db.session.add(self)
+            db.session.commit()
+
+            logging.info(f"[info] Dish.update_es_keywords :: {self.id} => {es_keywords}")
+        except Exception as e:
+            logging.debug(f"[err] Dish.update_es_keywords :: {self.id}, {es_keywords} => {e}")
+
+    @classmethod
+    def get_dish_import(self, **kwargs):
+        try:
+            query = (
+                db.session.query(Dish)
+                .paginate(int(kwargs["page"]), int(kwargs["size"]), error_out=False)
+            )
+
+            return query
+        except Exception as e:
+            logging.debug(f"[err] Dish.get_dish_import :: {kwargs} => {e}")
 
     @classmethod
     def get_all_dishes(self, **kwargs):

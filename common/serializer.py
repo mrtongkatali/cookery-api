@@ -19,6 +19,11 @@ class PaginationQSValidator(Schema):
     sort = fields.Str(required=False)
     q = fields.Str(required=False)
 
+class EsQuerySerializer(Schema):
+    page = fields.Integer(required=True)
+    size = fields.Integer(required=True)
+    ingredient_names = fields.Str(required=True)
+
 class DishNewSerializer(Schema):
     dish_name = fields.Str(required=True, validate=Length(max=100))
     main_dish = fields.Integer(required=True)
@@ -49,7 +54,6 @@ class IngredientNewSerializer(Schema):
     unit = fields.Str(required=True, validate=Length(max=100))
     ingredient_name = fields.Str(required=True, validate=Length(max=100))
     additional_note = fields.Str(required=False, validate=Length(max=1000), allow_none=True)
-    step_order = fields.Integer(required=True)
 
 class IngredientUpdateSerializer(Schema):
     amount = fields.Float(required=True)

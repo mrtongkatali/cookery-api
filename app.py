@@ -25,7 +25,7 @@ def setup_test():
     return app
 
 def create_app(env):
-    import settings
+    import settings # Import settings here due to conflict on test.py
 
     app = Flask(__name__)
 
@@ -55,7 +55,7 @@ def register_extensions(app):
     return None
 
 def main():
-    create_app("dev")
+    app = create_app("dev")
     app.run()
 
 if __name__ == '__main__':

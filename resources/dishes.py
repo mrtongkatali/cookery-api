@@ -42,7 +42,7 @@ class DishesElasticAPI(Resource):
             # }
             must = []
             for v in req['ingredient_names'].split(","):
-                must.append({ "match": { "es_keywords": v }})
+                must.append({ "match": { "es_keywords": v.strip() }})
 
             body["query"] = { "bool": { "must": must } }
             # body['query']['nested'] = {
@@ -75,10 +75,9 @@ class DishesElasticAPI(Resource):
             for source in dishes['hits']['hits']:
                 dish = source['_source']
                 data.append(dish)
-                logging.info(f"asdasdas -- {dish}")
 
         list = {
-            "list": data,
+            "list": dishes,
             "count": len(dishes['hits']['hits']),
             "total": dishes['hits']['total']['value']
         }

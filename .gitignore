@@ -7,3 +7,5 @@ cookery_nginx.conf
 cookeryapi.service
 cookery_uwsgi.ini
 readme.txt
+start_server.sh
+restart_server.sh

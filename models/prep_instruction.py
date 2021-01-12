@@ -30,6 +30,7 @@ class PrepInstruction(TimestampMixin, db.Model):
             return self.query.get(id)
         except Exception as e:
             logging.debug(f"[err] PrepInstruction.find_by_id({id}) => {e}")
+            return None
 
     @classmethod
     def find_last_step(self, dish_id):
@@ -45,3 +46,4 @@ class PrepInstruction(TimestampMixin, db.Model):
             return query
         except Exception as e:
             logging.debug(f"[err] PrepInstruction.find_last_step({dish_id}) => {e}")
+            return None

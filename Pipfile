@@ -27,6 +27,7 @@ gunicorn = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
 environs = "*"
 flask-swagger = "*"
+requests = "*"
 
 [requires]
 python_version = "3.6"

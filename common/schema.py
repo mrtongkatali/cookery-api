@@ -34,6 +34,7 @@ class DishSchema(ma.SQLAlchemySchema):
     cook_hour = ma.auto_field()
     cook_minute = ma.auto_field()
     serving_count = ma.auto_field()
+    es_keywords = ma.auto_field()
     status = ma.auto_field()
     created_at = ma.auto_field()
     updated_at = ma.auto_field()

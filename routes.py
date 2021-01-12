@@ -3,6 +3,7 @@ from resources.dishes import *
 from resources.ingredients import *
 from resources.prep_instructions import *
 from resources.data_import import *
+from resources.misc import *
 
 def register_routes(api):
     # Test URL
@@ -13,6 +14,7 @@ def register_routes(api):
     api.add_resource(UserAuthAPI, '/v1/user/auth',)
 
     # Dish
+    api.add_resource(DishesElasticAPI, '/v1/dish/search')
     api.add_resource(DishesAPI,'/v1/dish/list',)
     api.add_resource(DishAPI,
         '/v1/dish/new',
@@ -45,6 +47,8 @@ def register_routes(api):
 
     # Utils
     api.add_resource(DishImport, '/v1/dishes/import',)
+    api.add_resource(ReIndexAPI, '/v1/es/_reindex',)
+    api.add_resource(SyncESKewordsAPI, '/v1/es/_update_keywords',)
 
     # api.add_resource(TodoSimple,
     # #     '/todo/<string:todo_id>',

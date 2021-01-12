@@ -3,7 +3,7 @@ Description=Gunicorn instance to serve cookeryapi
 After=network.target
 
 [Service]
-User=leod
+User=ubuntu
 Group=www-data
 
 User=ubuntu

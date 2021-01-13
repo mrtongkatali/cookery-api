@@ -16,8 +16,8 @@ class SyncESKewordsAPI(Resource):
     def post(self):
         # trigger update for es_keywords field on dish
         try:
-            page = 6
-            size = 300
+            page = 1
+            size = 1500
             dishes = Dish.get_dish_import(page=page, size=size)
 
             for d in dishes.items:

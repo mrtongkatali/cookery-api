@@ -5,6 +5,8 @@ from resources.prep_instructions import *
 from resources.data_import import *
 from resources.misc import *
 
+from resources.test_swagger import *
+
 def register_routes(api):
     # Test URL
     api.add_resource(HelloWorldAPI, '/hello',)
@@ -49,6 +51,9 @@ def register_routes(api):
     api.add_resource(DishImport, '/v1/dishes/import',)
     api.add_resource(ReIndexAPI, '/v1/es/_reindex',)
     api.add_resource(SyncESKewordsAPI, '/v1/es/_update_keywords',)
+
+    # Testing Swagger
+    api.add_resource(UserTestAPI, '/v1/test_swagger',)
 
     # api.add_resource(TodoSimple,
     # #     '/todo/<string:todo_id>',

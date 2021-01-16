@@ -39,6 +39,14 @@ def create_app(env):
     else:
         app.config.from_object('settings.DevelopmentConfig')
 
+    authorizations = {
+        'Bearer Auth': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        },
+    }
+
     api = Api(app)
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
@@ -75,6 +83,7 @@ def setup_swagger(app):
     docs = FlaskApiSpec(app)
     docs.register(HelloWorldAPI)
     docs.register(UserSignUpAPI)
+    docs.register(UserAuthAPI)
 
 def main():
     app = create_app("dev")

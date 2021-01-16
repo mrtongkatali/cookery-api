@@ -33,13 +33,13 @@ class HelloWorldAPI(MethodResource, Resource):
 
 @doc(description='User Registration', tags=['User'])
 class UserSignUpAPI(MethodResource, Resource):
-    @use_kwargs(DocUserRegistration, location="json")
-    @marshal_with(UserSchema, code="200")
+    @use_kwargs(DocUserRegistration)
+    @marshal_with(UserSchema, code=200)
     @marshal_with(Error, code=400)
     @marshal_with(InternalError, code=500)
     def post(self, **kwargs):
         '''
-        Get method represents a GET API method
+        User Registration
         '''
         try:
             req = request.get_json(force=True)
@@ -60,9 +60,10 @@ class UserSignUpAPI(MethodResource, Resource):
             logging.info("[err] POST UserSignUpAPI :: {kwargs}, {e}")
             return dict(message=INTERNAL_ERROR), 500
 
-# @doc(description='User Auth', tags=['Auth'])
-class UserAuthAPI(Resource):
+@doc(description='User Registration', tags=['Auth'])
+class UserAuthAPI(MethodResource, Resource):
     @jwt_required
+    @use_kwargs(DocAuthHeader, location=("headers"))
     def get(self):
         if not get_jwt_identity():
             return Error().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
@@ -70,23 +71,29 @@ class UserAuthAPI(Resource):
         user = User.find_by_id(get_jwt_identity())
         return dict(data=UserSchema().dump(user)), 200
 
-    def post(self):
-        req = request.get_json(force=True)
-        user = User.find_by_username(**req)
+    @use_kwargs(DocUserLogin)
+    @marshal_with(AuthSuccess, code=200)
+    @marshal_with(Error, code=400)
+    @marshal_with(InternalError, code=500)
+    def post(self, **kwargs):
+        '''
+        User Login
+        '''
+        try:
+            req = request.get_json(force=True)
+            user = User.find_by_username(**req)
 
-        if user is None:
-            return Error().dump(
-                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400
+            if user is None:
+                return dict(message=BAD_REQUEST, errors={"message": "Invalid username or password."}), 400
 
-        authorized = user.check_password(req.get('password'))
+            authorized = user.check_password(req.get('password'))
+            if not authorized:
+                return dict(message=BAD_REQUEST, errors={"message": "Invalid username or password."}), 400
 
-        if not authorized:
-            return Error().dump(
-                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400
+            expires = timedelta(days=7)
+            access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 
-        expires = timedelta(days=7)
-        access_token = create_access_token(identity=str(user.id), expires_delta=expires)
-
-        return dict(message="Authenticated", token=access_token, user=UserSchema().dump(user)), 200
+            return dict(message="Authenticated", token=access_token, data=UserSchema().dump(user)), 200
+        except Exception as e:
+            logging.info("[err] POST UserAuthAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500

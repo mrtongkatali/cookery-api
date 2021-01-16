@@ -89,8 +89,22 @@ class Success(Schema):
     message = fields.String()
     data = fields.Dict()
 
+class AuthSuccess(Schema):
+    token = fields.String()
+    message = fields.String()
+    data = fields.Dict()
+
+### SCHEMA FOR SWAGGER ###
 class DocUserRegistration(Schema):
     username = fields.Str(required=True)
     firstname = fields.Str(required=True)
     lastname = fields.Str(required=True)
     password = fields.Str(required=True)
+
+class DocUserLogin(Schema):
+    username = fields.Str(required=True)
+    password = fields.Str(required=True)
+
+
+class DocAuthHeader(Schema):
+    Authorization = fields.Str(required=True, description="Authorization HTTP header with JWT refresh token e.g Authorization: Bearer xxx.xxx.xxx")

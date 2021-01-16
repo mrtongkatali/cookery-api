@@ -22,22 +22,21 @@ class HelloWorldAPI(MethodResource, Resource):
         return "Hello World!"
 
     @use_kwargs(DocUserRegistration, location="json")
-    @marshal_with(UserSchema, code=200)  # marshalling
-    @marshal_with(UserValidationSchema, code=422)
+    @marshal_with(ErrorSerializer, code=400)
     def post(self, **kwargs):
         '''
         Say `Test!`
         '''
-        # errors = UserValidationSchema().validate(**kwargs)
         req = request.get_json(force=True)
         errors = UserValidationSchema().validate(req)
-        return "ASDASD"
+        return dict(message=BAD_REQUEST, errors=errors)
 
 @doc(description='User Registration', tags=['User'])
 class UserSignUpAPI(MethodResource, Resource):
-    # @use_kwargs(UserValidationSchemaTest)
-    # @marshal_with(UserSchema, code="200")  # marshalling
-    def post(self):
+    @use_kwargs(DocUserRegistration, location="json")
+    @marshal_with(UserSchema, code="200")
+    @marshal_with(ErrorSerializer, code=400)
+    def post(self, **kwargs):
         '''
         Get method represents a GET API method
         '''
@@ -48,12 +47,12 @@ class UserSignUpAPI(MethodResource, Resource):
             if errors:
                 return ErrorSerializer().dump(
                     dict(message=BAD_REQUEST, errors=errors)
-                ), 400, DEFAULT_HEADER
+                ), 400
 
             if User.find_by_username(**req):
                 return ErrorSerializer().dump(
-                    dict(message=BAD_REQUEST, errors=['username already exists.'])
-                ), 400, DEFAULT_HEADER
+                    dict(message=BAD_REQUEST, errors={"message": "username already exists."})
+                ), 400
 
             user = User(**req)
             user.hash_password()
@@ -63,7 +62,9 @@ class UserSignUpAPI(MethodResource, Resource):
                 dict(message="Ok.", data=UserSchema().dump(user))
             ), 200
         except Exception as e:
-            logging.debug(f"[err] UserSignUpAPI :: {e}")
+            return ErrorSerializer().dump(
+                dict(message=INTERNAL_ERROR, errors={"message": "Something went wrong."})
+            ), 500
 
 class UserAuthAPI(Resource):
     @jwt_required
@@ -84,14 +85,14 @@ class UserAuthAPI(Resource):
         if user is None:
             return ErrorSerializer().dump(
                 dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400, DEFAULT_HEADER
+            ), 400
 
         authorized = user.check_password(req.get('password'))
 
         if not authorized:
             return ErrorSerializer().dump(
                 dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400, DEFAULT_HEADER
+            ), 400
 
         expires = timedelta(days=7)
         access_token = create_access_token(identity=str(user.id), expires_delta=expires)

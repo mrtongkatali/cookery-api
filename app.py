@@ -12,6 +12,7 @@ from extensions import *
 from datetime import datetime as dt
 
 from resources.user_auth import *
+from resources.errors import errors
 
 def setup_test():
     app = Flask(__name__)
@@ -46,9 +47,6 @@ def create_app(env):
     register_routes(api)
 
     setup_swagger(app)
-
-    # logger = logging.getLogger("app.access")
-    # logging.info('info on app.vue')
 
     return app
 

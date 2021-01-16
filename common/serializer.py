@@ -83,3 +83,6 @@ class DocUserRegistration(Schema):
     firstname = fields.Str(required=True)
     lastname = fields.Str(required=True)
     password = fields.Str(required=True)
+
+class Error(Schema):
+  error = fields.String()

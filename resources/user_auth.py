@@ -13,7 +13,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
-@doc(description='Say `Hello World 1234!`', tags=['Test Me'])
+@doc(description='Say `Hello World`', tags=["Test"])
 class HelloWorldAPI(MethodResource, Resource):
     def get(self):
         '''
@@ -21,21 +21,22 @@ class HelloWorldAPI(MethodResource, Resource):
         '''
         return "Hello World!"
 
-    @use_kwargs(DocUserRegistration, location="json")
-    @marshal_with(ErrorSerializer, code=400)
-    def post(self, **kwargs):
-        '''
-        Say `Test!`
-        '''
-        req = request.get_json(force=True)
-        errors = UserValidationSchema().validate(req)
-        return dict(message=BAD_REQUEST, errors=errors)
+    # @use_kwargs(DocUserRegistration, location="json")
+    # @marshal_with(Error, code=400)
+    # def post(self, **kwargs):
+    #     '''
+    #     Say `Test!`
+    #     '''
+    #     req = request.get_json(force=True)
+    #     errors = UserValidationSchema().validate(req)
+    #     return dict(message=BAD_REQUEST, errors=errors)
 
 @doc(description='User Registration', tags=['User'])
 class UserSignUpAPI(MethodResource, Resource):
     @use_kwargs(DocUserRegistration, location="json")
     @marshal_with(UserSchema, code="200")
-    @marshal_with(ErrorSerializer, code=400)
+    @marshal_with(Error, code=400)
+    @marshal_with(InternalError, code=500)
     def post(self, **kwargs):
         '''
         Get method represents a GET API method
@@ -45,32 +46,26 @@ class UserSignUpAPI(MethodResource, Resource):
             errors = UserValidationSchema().validate(req)
 
             if errors:
-                return ErrorSerializer().dump(
-                    dict(message=BAD_REQUEST, errors=errors)
-                ), 400
+                return dict(message=BAD_REQUEST, errors=errors), 400
 
             if User.find_by_username(**req):
-                return ErrorSerializer().dump(
-                    dict(message=BAD_REQUEST, errors={"message": "username already exists."})
-                ), 400
+                return dict(message=BAD_REQUEST, errors={"message": "username already exists."}), 400
 
             user = User(**req)
             user.hash_password()
             user.save()
 
-            return SuccessSerializer().dump(
-                dict(message="Ok.", data=UserSchema().dump(user))
-            ), 200
+            return dict(message="OK", data=UserSchema().dump(user)), 200
         except Exception as e:
-            return ErrorSerializer().dump(
-                dict(message=INTERNAL_ERROR, errors={"message": "Something went wrong."})
-            ), 500
+            logging.info("[err] POST UserSignUpAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500
 
+# @doc(description='User Auth', tags=['Auth'])
 class UserAuthAPI(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+            return Error().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
 
         user = User.find_by_id(get_jwt_identity())
         return dict(data=UserSchema().dump(user)), 200
@@ -79,18 +74,15 @@ class UserAuthAPI(Resource):
         req = request.get_json(force=True)
         user = User.find_by_username(**req)
 
-        # logger = logging.getLogger("app.access")
-        # logging.info(user.username)
-
         if user is None:
-            return ErrorSerializer().dump(
+            return Error().dump(
                 dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
             ), 400
 
         authorized = user.check_password(req.get('password'))
 
         if not authorized:
-            return ErrorSerializer().dump(
+            return Error().dump(
                 dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
             ), 400
 

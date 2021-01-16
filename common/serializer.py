@@ -78,11 +78,19 @@ class SuccessSerializer(Schema):
     message = fields.String()
     data = fields.Dict()
 
+class InternalError(Schema):
+    message = fields.String()
+
+class Error(Schema):
+    message = fields.String()
+    errors = fields.Dict()
+
+class Success(Schema):
+    message = fields.String()
+    data = fields.Dict()
+
 class DocUserRegistration(Schema):
     username = fields.Str(required=True)
     firstname = fields.Str(required=True)
     lastname = fields.Str(required=True)
     password = fields.Str(required=True)
-
-class Error(Schema):
-  error = fields.String()

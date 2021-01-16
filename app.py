@@ -70,11 +70,11 @@ def setup_swagger(app):
     from flask_apispec.extension import FlaskApiSpec
 
     app.config.update({
-        'APISPEC_SPEC': APISpec(
-            title='Cookery API',
-            version='v0.1',
+        "APISPEC_SPEC": APISpec(
+            title="Cookery API",
+            version="v0.1",
             plugins=[MarshmallowPlugin()],
-            openapi_version='2.0.0'
+            openapi_version="2.0.0"
         ),
         'APISPEC_SWAGGER_URL': '/api/swagger.json',  # URI to access API Doc JSON
         'APISPEC_SWAGGER_UI_URL': '/api/swagger'  # URI to access UI of API Doc

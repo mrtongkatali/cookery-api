@@ -64,12 +64,19 @@ class UserSignUpAPI(MethodResource, Resource):
 class UserAuthAPI(MethodResource, Resource):
     @jwt_required
     @use_kwargs(DocAuthHeader, location=("headers"))
-    def get(self):
-        if not get_jwt_identity():
-            return Error().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+    @marshal_with(AuthSuccess, code=200)
+    @marshal_with(Error, code=401)
+    @marshal_with(InternalError, code=500)
+    def get(self, **kwargs):
+        try:
+            if not get_jwt_identity():
+                return dict(message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
-        user = User.find_by_id(get_jwt_identity())
-        return dict(data=UserSchema().dump(user)), 200
+            user = User.find_by_id(get_jwt_identity())
+            return dict(data=UserSchema().dump(user)), 200
+        except Exception as e:
+            logging.info("[err] GET UserAuthAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500
 
     @use_kwargs(DocUserLogin)
     @marshal_with(AuthSuccess, code=200)

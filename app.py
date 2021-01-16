@@ -11,6 +11,8 @@ from db import db
 from extensions import *
 from datetime import datetime as dt
 
+from resources.user_auth import *
+
 def setup_test():
     app = Flask(__name__)
     app.config['DEBUG'] = True
@@ -43,6 +45,8 @@ def create_app(env):
     register_extensions(app)
     register_routes(api)
 
+    setup_swagger(app)
+
     # logger = logging.getLogger("app.access")
     # logging.info('info on app.vue')
 
@@ -53,6 +57,26 @@ def register_extensions(app):
     db.init_app(app)
 
     return None
+
+def setup_swagger(app):
+    from apispec import APISpec
+    from apispec.ext.marshmallow import MarshmallowPlugin
+    from flask_apispec.extension import FlaskApiSpec
+
+    app.config.update({
+        'APISPEC_SPEC': APISpec(
+            title='Cookery API',
+            version='v0.1',
+            plugins=[MarshmallowPlugin()],
+            openapi_version='2.0.0'
+        ),
+        'APISPEC_SWAGGER_URL': '/api/swagger.json',  # URI to access API Doc JSON
+        'APISPEC_SWAGGER_UI_URL': '/api/swagger'  # URI to access UI of API Doc
+    })
+
+    docs = FlaskApiSpec(app)
+    docs.register(HelloWorldAPI)
+    docs.register(UserSignUpAPI)
 
 def main():
     app = create_app("dev")

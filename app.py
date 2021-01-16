@@ -1,7 +1,7 @@
 import logging
 
 from flask import Flask
-from flask_restful import Api
+from flask_restful_swagger_3 import Api, swagger, get_swagger_blueprint
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
@@ -36,12 +36,26 @@ def create_app(env):
     else:
         app.config.from_object('settings.DevelopmentConfig')
 
-    api = Api(app)
+    servers = [{"url": "http://api-dev-cookery.crazyapp.cloud/"}]
+    api = Api(app, version='5', servers=servers, title="APP")
+
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
 
     register_extensions(app)
     register_routes(api)
+
+    ## init swagger
+    SWAGGER_URL = '/api/doc'  # URL for exposing Swagger UI (without trailing '/')
+    API_URL = 'swagger.json'  # Our API url (can of course be a local resource)
+
+    swagger_blueprint = get_swagger_blueprint(
+        api.open_api_json,
+        swagger_prefix_url=SWAGGER_URL,
+        swagger_url=API_URL,
+        title='Cookery', version='0.1', servers=servers)
+
+    app.register_blueprint(swagger_blueprint)
 
     # logger = logging.getLogger("app.access")
     # logging.info('info on app.vue')

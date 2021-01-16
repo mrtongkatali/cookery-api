@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b02427c5af50d82bcf1af3379c4ea32669c62e43bb6332b9112d10cbf066223d"
+            "sha256": "87e5d71bd144effdaab6c388addf2c6ca4075d78324344a32b6f85b1589c249b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -184,6 +184,13 @@
             "index": "pypi",
             "version": "==0.3.8"
         },
+        "flask-restful-swagger-3": {
+            "hashes": [
+                "sha256:fa10996d68edd0a9d8e42c9e3bb755b93914bcc812020bc43e4ef56b072a7ba9"
+            ],
+            "index": "pypi",
+            "version": "==0.4.3"
+        },
         "flask-script": {
             "hashes": [
                 "sha256:6425963d91054cfcc185807141c7314a9c5ad46325911bd24dcb489bd0161c65"
@@ -241,11 +248,10 @@
         },
         "mako": {
             "hashes": [
-                "sha256:8195c8c1400ceb53496064314c6736719c6f25e7479cd24c77be3d9361cddc27",
-                "sha256:93729a258e4ff0747c876bd9e20df1b9758028946e976324ccd2d68245c7b6a9"
+                "sha256:17831f0b7087c313c0ffae2bcbbd3c1d5ba9eeac9c38f2eb7b50e8c99fe9d5ab"
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-            "version": "==1.1.3"
+            "version": "==1.1.4"
         },
         "markupsafe": {
             "hashes": [

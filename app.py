@@ -1,4 +1,4 @@
-import logging
+# import logging
 
 from flask import Flask
 from flask_restful import Api
@@ -39,14 +39,6 @@ def create_app(env):
         app.config.from_object('settings.StagingConfig')
     else:
         app.config.from_object('settings.DevelopmentConfig')
-
-    authorizations = {
-        'Bearer Auth': {
-            'type': 'apiKey',
-            'in': 'header',
-            'name': 'Authorization'
-        },
-    }
 
     api = Api(app)
     bcrypt = Bcrypt(app)

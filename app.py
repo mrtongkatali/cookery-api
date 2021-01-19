@@ -12,6 +12,7 @@ from extensions import *
 from datetime import datetime as dt
 
 from resources.user_auth import *
+from resources.dishes import DishesElasticAPI
 from resources.errors import errors
 
 def setup_test():
@@ -84,6 +85,7 @@ def setup_swagger(app):
     docs.register(HelloWorldAPI)
     docs.register(UserSignUpAPI)
     docs.register(UserAuthAPI)
+    docs.register(DishesElasticAPI)
 
 def main():
     app = create_app("dev")

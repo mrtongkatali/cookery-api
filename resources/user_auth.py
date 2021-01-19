@@ -13,7 +13,7 @@ from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
-@doc(description='Say `Hello World`', tags=["Test"])
+@doc(description="Say `Hello World`", tags=["Test"])
 class HelloWorldAPI(MethodResource, Resource):
     def get(self):
         '''
@@ -31,7 +31,7 @@ class HelloWorldAPI(MethodResource, Resource):
     #     errors = UserValidationSchema().validate(req)
     #     return dict(message=BAD_REQUEST, errors=errors)
 
-@doc(description='User Registration', tags=['User'])
+@doc(description="User Registration", tags=["User"])
 class UserSignUpAPI(MethodResource, Resource):
     @use_kwargs(DocUserRegistration)
     @marshal_with(UserSchema, code=200)
@@ -60,7 +60,7 @@ class UserSignUpAPI(MethodResource, Resource):
             logging.info("[err] POST UserSignUpAPI :: {kwargs}, {e}")
             return dict(message=INTERNAL_ERROR), 500
 
-@doc(description='User Registration', tags=['Auth'])
+@doc(description="User Registration", tags=["Auth"])
 class UserAuthAPI(MethodResource, Resource):
     @jwt_required
     @use_kwargs(DocAuthHeader, location=("headers"))

@@ -105,6 +105,10 @@ class DocUserLogin(Schema):
     username = fields.Str(required=True)
     password = fields.Str(required=True)
 
+class DocDishQuery(Schema):
+    page = fields.Integer(required=True, default=1)
+    size = fields.Integer(required=True, default=20)
+    ingredient_names = fields.Str(description="Comma-separated values e.g ingredient_1, ingredient_2, ingredient_3")
 
 class DocAuthHeader(Schema):
     Authorization = fields.Str(required=True, description="Authorization HTTP header with JWT refresh token e.g Authorization: Bearer xxx.xxx.xxx")

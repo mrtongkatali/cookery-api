@@ -28,6 +28,7 @@ sentry-sdk = {extras = ["flask"], version = "*"}
 environs = "*"
 flask-swagger = "*"
 requests = "*"
+flask-apispec = "*"
 
 [requires]
 python_version = "3.6"

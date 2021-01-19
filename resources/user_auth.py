@@ -5,67 +5,102 @@ from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 from flask_restful import Resource
 
+from flask_apispec import marshal_with, doc, use_kwargs
+from flask_apispec.views import MethodResource
+
 from models.user import User, UserProfile
 from common.constant import *
 from common.serializer import *
 from common.schema import UserSchema
 
-class HelloWorldAPI(Resource):
+@doc(description="Say `Hello World`", tags=["Test"])
+class HelloWorldAPI(MethodResource, Resource):
     def get(self):
-        return "Hello World from the other side.."
+        '''
+        Say `Hello World!`
+        '''
+        return "Hello World!"
 
-class UserSignUpAPI(Resource):
-    def post(self):
-        req = request.get_json(force=True)
-        errors = UserValidationSchema().validate(req)
+    # @use_kwargs(DocUserRegistration, location="json")
+    # @marshal_with(Error, code=400)
+    # def post(self, **kwargs):
+    #     '''
+    #     Say `Test!`
+    #     '''
+    #     req = request.get_json(force=True)
+    #     errors = UserValidationSchema().validate(req)
+    #     return dict(message=BAD_REQUEST, errors=errors)
 
-        if errors:
-            return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=errors)
-            ), 400, DEFAULT_HEADER
+@doc(description="User Registration", tags=["User"])
+class UserSignUpAPI(MethodResource, Resource):
+    @use_kwargs(DocUserRegistration)
+    @marshal_with(UserSchema, code=200)
+    @marshal_with(Error, code=400)
+    @marshal_with(InternalError, code=500)
+    def post(self, **kwargs):
+        '''
+        User Registration
+        '''
+        try:
+            req = request.get_json(force=True)
+            errors = UserValidationSchema().validate(req)
 
-        if User.find_by_username(**req):
-            return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=['username already exists.'])
-            ), 400, DEFAULT_HEADER
+            if errors:
+                return dict(message=BAD_REQUEST, errors=errors), 400
 
-        user = User(**req)
-        user.hash_password()
-        user.save()
+            if User.find_by_username(**req):
+                return dict(message=BAD_REQUEST, errors={"message": "username already exists."}), 400
 
-        return SuccessSerializer().dump(
-            dict(message="Ok.", data=UserSchema().dump(user))
-        ), 200
+            user = User(**req)
+            user.hash_password()
+            user.save()
 
-class UserAuthAPI(Resource):
+            return dict(message="OK", data=UserSchema().dump(user)), 200
+        except Exception as e:
+            logging.info("[err] POST UserSignUpAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500
+
+@doc(description="User Registration", tags=["Auth"])
+class UserAuthAPI(MethodResource, Resource):
     @jwt_required
-    def get(self):
-        if not get_jwt_identity():
-            return ErrorSerializer().dump(dict(message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again'])), 401
+    @use_kwargs(DocAuthHeader, location=("headers"))
+    @marshal_with(AuthSuccess, code=200)
+    @marshal_with(Error, code=401)
+    @marshal_with(InternalError, code=500)
+    def get(self, **kwargs):
+        try:
+            if not get_jwt_identity():
+                return dict(message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
-        user = User.find_by_id(get_jwt_identity())
-        return dict(data=UserSchema().dump(user)), 200
+            user = User.find_by_id(get_jwt_identity())
+            return dict(data=UserSchema().dump(user)), 200
+        except Exception as e:
+            logging.info("[err] GET UserAuthAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500
 
-    def post(self):
-        req = request.get_json(force=True)
-        user = User.find_by_username(**req)
+    @use_kwargs(DocUserLogin)
+    @marshal_with(AuthSuccess, code=200)
+    @marshal_with(Error, code=400)
+    @marshal_with(InternalError, code=500)
+    def post(self, **kwargs):
+        '''
+        User Login
+        '''
+        try:
+            req = request.get_json(force=True)
+            user = User.find_by_username(**req)
 
-        # logger = logging.getLogger("app.access")
-        # logging.info(user.username)
+            if user is None:
+                return dict(message=BAD_REQUEST, errors={"message": "Invalid username or password."}), 400
 
-        if user is None:
-            return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400, DEFAULT_HEADER
+            authorized = user.check_password(req.get('password'))
+            if not authorized:
+                return dict(message=BAD_REQUEST, errors={"message": "Invalid username or password."}), 400
 
-        authorized = user.check_password(req.get('password'))
+            expires = timedelta(days=7)
+            access_token = create_access_token(identity=str(user.id), expires_delta=expires)
 
-        if not authorized:
-            return ErrorSerializer().dump(
-                dict(message=BAD_REQUEST, errors=['Invalid username or password.'])
-            ), 400, DEFAULT_HEADER
-
-        expires = timedelta(days=7)
-        access_token = create_access_token(identity=str(user.id), expires_delta=expires)
-
-        return dict(message="Authenticated", token=access_token, user=UserSchema().dump(user)), 200
+            return dict(message="Authenticated", token=access_token, data=UserSchema().dump(user)), 200
+        except Exception as e:
+            logging.info("[err] POST UserAuthAPI :: {kwargs}, {e}")
+            return dict(message=INTERNAL_ERROR), 500

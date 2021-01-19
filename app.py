@@ -1,4 +1,4 @@
-import logging
+# import logging
 
 from flask import Flask
 from flask_restful import Api
@@ -10,6 +10,10 @@ from routes import register_routes
 from db import db
 from extensions import *
 from datetime import datetime as dt
+
+from resources.user_auth import *
+from resources.dishes import DishesElasticAPI
+from resources.errors import errors
 
 def setup_test():
     app = Flask(__name__)
@@ -43,8 +47,7 @@ def create_app(env):
     register_extensions(app)
     register_routes(api)
 
-    # logger = logging.getLogger("app.access")
-    # logging.info('info on app.vue')
+    setup_swagger(app)
 
     return app
 
@@ -53,6 +56,28 @@ def register_extensions(app):
     db.init_app(app)
 
     return None
+
+def setup_swagger(app):
+    from apispec import APISpec
+    from apispec.ext.marshmallow import MarshmallowPlugin
+    from flask_apispec.extension import FlaskApiSpec
+
+    app.config.update({
+        "APISPEC_SPEC": APISpec(
+            title="Cookery API",
+            version="v0.1",
+            plugins=[MarshmallowPlugin()],
+            openapi_version="2.0.0"
+        ),
+        'APISPEC_SWAGGER_URL': '/api/swagger.json',  # URI to access API Doc JSON
+        'APISPEC_SWAGGER_UI_URL': '/api/swagger'  # URI to access UI of API Doc
+    })
+
+    docs = FlaskApiSpec(app)
+    docs.register(HelloWorldAPI)
+    docs.register(UserSignUpAPI)
+    docs.register(UserAuthAPI)
+    docs.register(DishesElasticAPI)
 
 def main():
     app = create_app("dev")

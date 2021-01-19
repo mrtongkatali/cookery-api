@@ -4,6 +4,9 @@ from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+from flask_apispec import marshal_with, doc, use_kwargs
+from flask_apispec.views import MethodResource
+
 from models.dish import Dish
 from common.constant import *
 from common.serializer import *
@@ -13,11 +16,17 @@ from utils.es import Elastic
 
 es = Elastic("cookery-dish")
 
-class DishesElasticAPI(Resource):
+@doc(description="Full-text search", tags=["Dish"])
+class DishesElasticAPI(MethodResource, Resource):
     @jwt_required
-    def post(self):
+    @use_kwargs(DocDishQuery)
+    @use_kwargs(DocAuthHeader, location=("headers"))
+    @marshal_with(Success, code=200)
+    @marshal_with(Error, code=400)
+    @marshal_with(InternalError, code=500)
+    def post(self, **kwargs):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         req = request.get_json(force=True)
         errors = EsQuerySerializer().validate(req)
@@ -88,7 +97,7 @@ class DishesAPI(Resource):
     @jwt_required
     def get(self):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         req = request.args
         errors = PaginationQSValidator().validate(req)
@@ -109,7 +118,7 @@ class DishAPI(Resource):
     @jwt_required
     def get(self, dish_id):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         data = Dish.find_by_id(dish_id)
 
@@ -128,7 +137,7 @@ class DishAPI(Resource):
     @jwt_required
     def post(self):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         req = request.get_json(force=True)
         errors = DishNewSerializer().validate(req)
@@ -148,7 +157,7 @@ class DishAPI(Resource):
     @jwt_required
     def put(self, dish_id):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         req = request.get_json(force=True)
         errors = DishUpdateSerializer().validate(req)
@@ -170,7 +179,7 @@ class RemoveDishAPI(Resource):
     @jwt_required
     def post(self, dish_id):
         if not get_jwt_identity():
-            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors=['Invalid token. Please try again.']), 401
+            return dict(code=CODE_UNAUTHORIZED, message=UNAUTHORIZED_ERROR, errors={"message": "Invalid credentials."}), 401
 
         dish = Dish.find_by_id(dish_id)
 

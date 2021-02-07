@@ -81,7 +81,7 @@ def setup_swagger(app):
 
 def main():
     app = create_app("dev")
-    app.run()
+    app.run(port="9090")
 
 if __name__ == '__main__':
     # from db import db
